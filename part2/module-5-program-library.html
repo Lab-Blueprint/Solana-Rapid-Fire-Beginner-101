@@ -72,13 +72,9 @@
             </p>
 
             <div class="slide-deck">
-                <div class="slide-header">
-                    <div class="slide-counter" data-slide-counter></div>
-                </div>
 
                 <div class="slide active">
                     <div class="slide-card my-8">
-                        <div class="slide-kicker">Slide 1</div>
                         <div class="slide-title">Programs are shared libraries</div>
                         <div class="slide-subtitle">Code is stateless; accounts hold all persistent state.</div>
                     </div>
@@ -99,11 +95,72 @@
                 </div>
 
                 <div class="slide">
-                    <h2>Programs Are Stateless</h2>
+                    <h2>Transaction Anatomy (Interactive)</h2>
                     <p>
-                        A program is code that runs the same for everyone. It does not store user data itself. Instead, it reads and writes
-                        to accounts provided in a transaction.
+                        A Solana transaction contains a list of instructions (program + parameters) and a list of accounts those instructions
+                        will read/write. Build a tiny transaction to see the structure.
                     </p>
+                    <p class="text-sm text-gray-600 mt-2">
+                        Parallel benefit: when transactions touch different account sets, validators can execute them in parallel for higher throughput.
+                    </p>
+                    <div class="animation-container my-8">
+                        <div id="transaction-builder" class="p-6">
+                            <div class="grid lg:grid-cols-2 gap-6">
+                                <div class="space-y-4">
+                                    <div class="bg-white/80 border border-[#7AB2B2] rounded-xl p-4">
+                                        <p class="text-sm font-semibold text-gray-700">Build Instruction</p>
+                                        <div class="grid grid-cols-1 gap-3 mt-3 text-sm">
+                                            <label class="text-xs font-semibold text-gray-600">Instruction Type</label>
+                                            <select id="tx-instruction-type" class="w-full border border-[#7AB2B2] rounded-lg p-2 bg-white text-sm">
+                                                <option value="sol">Transfer SOL</option>
+                                                <option value="spl">Transfer SPL Token</option>
+                                            </select>
+
+                                            <div id="tx-sol-fields" class="space-y-3">
+                                                <label class="text-xs font-semibold text-gray-600">Amount (SOL)</label>
+                                                <input id="tx-sol-amount" class="w-full border border-[#7AB2B2] rounded-lg p-2 bg-white text-sm" value="1">
+                                                <label class="text-xs font-semibold text-gray-600">To Account</label>
+                                                <input id="tx-sol-to" class="w-full border border-[#7AB2B2] rounded-lg p-2 bg-white text-sm" value="Wallet B">
+                                            </div>
+
+                                            <div id="tx-spl-fields" class="space-y-3 hidden">
+                                                <label class="text-xs font-semibold text-gray-600">Token Mint (SPL)</label>
+                                                <input id="tx-spl-mint" class="w-full border border-[#7AB2B2] rounded-lg p-2 bg-white text-sm" value="USDC Mint">
+                                                <label class="text-xs font-semibold text-gray-600">Amount</label>
+                                                <input id="tx-spl-amount" class="w-full border border-[#7AB2B2] rounded-lg p-2 bg-white text-sm" value="25">
+                                                <label class="text-xs font-semibold text-gray-600">From Account (Owner)</label>
+                                                <input id="tx-spl-from" class="w-full border border-[#7AB2B2] rounded-lg p-2 bg-white text-sm" value="Wallet A">
+                                                <label class="text-xs font-semibold text-gray-600">To Account (Owner)</label>
+                                                <input id="tx-spl-to" class="w-full border border-[#7AB2B2] rounded-lg p-2 bg-white text-sm" value="Wallet B">
+                                                <p class="text-xs text-gray-500">Note: SPL transfers use Associated Token Accounts (ATA) for both sender and receiver.</p>
+                                            </div>
+
+                                            <button id="tx-add-instruction" class="btn-secondary">Add Instruction</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="bg-white border border-[#7AB2B2] rounded-xl p-4">
+                                        <p class="text-sm font-semibold text-gray-700">Instructions List</p>
+                                        <div id="tx-instructions" class="mt-3 space-y-2 text-sm"></div>
+                                    </div>
+                                    <div class="bg-white border border-[#7AB2B2] rounded-xl p-4">
+                                        <p class="text-sm font-semibold text-gray-700">Accounts List (Auto-generated)</p>
+                                        <div id="tx-accounts" class="mt-3 space-y-2 text-sm"></div>
+                                    </div>
+                                    <div class="bg-white border border-[#7AB2B2] rounded-xl p-4">
+                                        <p class="text-sm font-semibold text-gray-700">Transaction Summary</p>
+                                        <pre id="tx-summary" class="text-xs bg-[#EBF4F6] p-3 rounded-lg border border-[#7AB2B2] whitespace-pre-wrap">Add an instruction to see the transaction.</pre>
+                                        <button id="tx-reset" class="btn-secondary mt-3">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="animation-controls">
+                            <div class="text-sm text-gray-700">Instruction defines program + accounts list</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="slide">
@@ -280,6 +337,171 @@
             ]
         };
         renderQuiz('quiz-container', quizData);
+    </script>
+
+    <script>
+        const txBuilder = {
+            instructions: [],
+            accounts: [],
+
+            init() {
+                this.cache();
+                this.bind();
+                this.render();
+            },
+
+            cache() {
+                this.instructionsEl = document.getElementById('tx-instructions');
+                this.accountsEl = document.getElementById('tx-accounts');
+                this.summaryEl = document.getElementById('tx-summary');
+                this.typeSelect = document.getElementById('tx-instruction-type');
+                this.solFields = document.getElementById('tx-sol-fields');
+                this.splFields = document.getElementById('tx-spl-fields');
+            },
+
+            bind() {
+                this.typeSelect?.addEventListener('change', () => this.toggleFields());
+                document.getElementById('tx-add-instruction')?.addEventListener('click', () => {
+                    const type = this.typeSelect.value;
+                    const instruction = this.buildInstruction(type);
+                    if (!instruction) return;
+                    this.instructions.push(instruction);
+                    this.updateAccounts();
+                    this.render();
+                });
+
+                document.getElementById('tx-reset')?.addEventListener('click', () => {
+                    this.instructions = [];
+                    this.accounts = [];
+                    this.render();
+                });
+            },
+
+            toggleFields() {
+                const isSol = this.typeSelect.value === 'sol';
+                if (this.solFields) this.solFields.classList.toggle('hidden', !isSol);
+                if (this.splFields) this.splFields.classList.toggle('hidden', isSol);
+            },
+
+            buildInstruction(type) {
+                if (type === 'sol') {
+                    const amount = document.getElementById('tx-sol-amount').value.trim();
+                    const toAccount = document.getElementById('tx-sol-to').value.trim();
+                    if (!amount || !toAccount) return null;
+                    return {
+                        type: 'Transfer SOL',
+                        program: 'System Program',
+                        params: {
+                            amount_sol: amount,
+                            to: toAccount
+                        }
+                    };
+                }
+
+                const mint = document.getElementById('tx-spl-mint').value.trim();
+                const amount = document.getElementById('tx-spl-amount').value.trim();
+                const from = document.getElementById('tx-spl-from').value.trim();
+                const to = document.getElementById('tx-spl-to').value.trim();
+                if (!mint || !amount || !from || !to) return null;
+                return {
+                    type: 'Transfer SPL',
+                    program: 'Token Program',
+                    params: {
+                        mint,
+                        amount,
+                        from_owner: from,
+                        to_owner: to
+                    }
+                };
+            },
+
+            updateAccounts() {
+                const accounts = [];
+                this.instructions.forEach((inst) => {
+                    if (inst.type === 'Transfer SOL') {
+                        accounts.push({
+                            account: 'System Program',
+                            read: true,
+                            write: false
+                        });
+                        accounts.push({
+                            account: inst.params.to,
+                            read: true,
+                            write: true
+                        });
+                    }
+
+                    if (inst.type === 'Transfer SPL') {
+                        accounts.push({
+                            account: 'Token Program',
+                            read: true,
+                            write: false
+                        });
+                        accounts.push({
+                            account: inst.params.mint,
+                            read: true,
+                            write: false
+                        });
+                        accounts.push({
+                            account: `ATA(${inst.params.from_owner})`,
+                            read: true,
+                            write: true
+                        });
+                        accounts.push({
+                            account: `ATA(${inst.params.to_owner})`,
+                            read: true,
+                            write: true
+                        });
+                    }
+                });
+                this.accounts = accounts;
+            },
+
+            render() {
+                this.instructionsEl.innerHTML = this.instructions.length
+                    ? this.instructions.map((inst, idx) => `
+                        <div class="p-3 rounded-lg border border-[#7AB2B2] bg-white/70">
+                            <div class="text-xs text-gray-500">Instruction ${idx + 1}</div>
+                            <div class="font-semibold text-gray-800">${inst.program}</div>
+                            <div class="text-xs text-gray-600">${inst.type}</div>
+                            <div class="text-xs text-gray-500">params: ${Object.entries(inst.params).map(([key, val]) => `${key}=${val}`).join(', ')}</div>
+                        </div>
+                    `).join('')
+                    : '<p class="text-xs text-gray-500">No instructions yet.</p>';
+
+                this.accountsEl.innerHTML = this.accounts.length
+                    ? this.accounts.map((acc, idx) => `
+                        <div class="p-3 rounded-lg border border-[#7AB2B2] bg-white/70">
+                            <div class="text-xs text-gray-500">Account ${idx + 1}</div>
+                            <div class="font-semibold text-gray-800">${acc.account}</div>
+                            <div class="text-xs text-gray-600">${acc.read ? 'read' : ''}${acc.read && acc.write ? ' + ' : ''}${acc.write ? 'write' : ''}</div>
+                        </div>
+                    `).join('')
+                    : '<p class="text-xs text-gray-500">No accounts yet.</p>';
+
+                if (this.instructions.length === 0 && this.accounts.length === 0) {
+                    this.summaryEl.textContent = 'Add an instruction and accounts to see the transaction.';
+                    return;
+                }
+
+                const summary = {
+                    instructions: this.instructions.map(i => ({ program_id: i.program, parameters: i.params })),
+                    accounts: this.accounts.map(a => ({
+                        address: a.account,
+                        read: a.read,
+                        write: a.write
+                    }))
+                };
+                this.summaryEl.textContent = JSON.stringify(summary, null, 2);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('transaction-builder')) {
+                txBuilder.init();
+                txBuilder.toggleFields();
+            }
+        });
     </script>
 </body>
 </html>

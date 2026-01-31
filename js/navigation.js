@@ -189,6 +189,9 @@ const Navigation = {
      * Generate sidebar HTML
      */
     generateSidebar() {
+        if (!this.progress) {
+            this.loadProgress();
+        }
         const isInSubfolder = window.location.pathname.includes('/part1/') ||
                             window.location.pathname.includes('/part2/');
         const prefix = isInSubfolder ? '../' : '';

@@ -304,6 +304,11 @@ function renderQuiz(containerId, quizData) {
             </div>
         </div>
     `;
+
+    // Ensure Alpine initializes the newly injected quiz
+    if (window.Alpine && typeof window.Alpine.initTree === 'function') {
+        window.Alpine.initTree(container);
+    }
 }
 
 // Export for global use

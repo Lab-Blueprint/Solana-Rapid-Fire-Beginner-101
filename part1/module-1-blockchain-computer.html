@@ -72,13 +72,9 @@
             </p>
 
             <div class="slide-deck">
-                <div class="slide-header">
-                    <div class="slide-counter" data-slide-counter></div>
-                </div>
 
                 <div class="slide active">
                     <div class="slide-card my-8">
-                        <div class="slide-kicker">Slide 1</div>
                         <div class="slide-title">Blockchain is a decentralized computer</div>
                         <div class="slide-subtitle">Many nodes run the same rules, so no single owner controls the system.</div>
                     </div>
@@ -99,13 +95,33 @@
                 </div>
 
                 <div class="slide">
-                    <h2>Blockchain = Decentralized Computer</h2>
+                    <h2>What is a Computer? (Interactive)</h2>
                     <p>
-                        To an engineer, a blockchain is best understood as a <strong>decentralized super-computer</strong> or a
-                        <strong>special-purpose cloud computing platform</strong>. Instead of one company running servers, thousands of
-                        machines coordinate to run a shared system.
+                        Try the flow: input -> process -> memory -> output. Change the input and function, then watch the state persist.
                     </p>
+                    <div id="computer-flow"></div>
+                </div>
 
+                <div class="slide">
+                    <h2>Computer Model: Input -> Process -> Output</h2>
+                    <div class="grid lg:grid-cols-2 gap-6 my-6">
+                        <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                            <h3 class="text-solana-purple mt-0 mb-2">Traditional Laptop/Server</h3>
+                            <ul>
+                                <li><strong>Input</strong>: keyboard, mouse, network requests</li>
+                                <li><strong>Process</strong>: CPU runs programs locally</li>
+                                <li><strong>Output</strong>: screen + local memory state</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                            <h3 class="text-solana-green mt-0 mb-2">Blockchain Computer</h3>
+                            <ul>
+                                <li><strong>Input</strong>: transactions from clients worldwide</li>
+                                <li><strong>Process</strong>: validators run the same software on the same ordered inputs</li>
+                                <li><strong>Output</strong>: synchronized state on every node</li>
+                            </ul>
+                        </div>
+                    </div>
                     <div class="info-box note">
                         <div class="info-box-title">
                             <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +130,7 @@
                             Key Idea
                         </div>
                         <p class="text-gray-700 text-sm m-0">
-                            The "see it everywhere" property is what makes blockchain useful for trustless coordination: no single node owns the truth.
+                            Blockchain is a computer whose output is identical across many nodes, not just one machine.
                         </p>
                     </div>
                 </div>
@@ -140,6 +156,36 @@
                         A centralized server can fail, censor, or be compromised. A peer-to-peer blockchain distributes both data and control.
                         This is why people describe it as "everything everywhere all at once."
                     </p>
+                </div>
+
+                <div class="slide">
+                    <h2>Everything Everywhere All at Once (Interactive)</h2>
+                    <p>
+                        Fire a transaction (input), watch validators coordinate (process), then click validators to see the synchronized state (output).
+                    </p>
+                    <div id="all-at-once-animation" class="my-6"></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Pros vs Cons of This Computing Model</h2>
+                    <div class="grid md:grid-cols-2 gap-6 my-6">
+                        <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                            <h3 class="text-solana-green mt-0 mb-2">Pros</h3>
+                            <ul>
+                                <li>No single point of failure</li>
+                                <li>Shared truth across participants</li>
+                                <li>Censorship resistance</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                            <h3 class="text-solana-purple mt-0 mb-2">Cons</h3>
+                            <ul>
+                                <li>Coordination overhead</li>
+                                <li>Slower than a single computer</li>
+                                <li>Complexity in networking and validation</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="slide">
@@ -171,6 +217,8 @@
     <script src="../js/quiz.js"></script>
     <script src="../js/slides.js"></script>
     <script src="../js/animations/blockchain-network.js"></script>
+    <script src="../js/animations/all-at-once.js"></script>
+    <script src="../js/animations/computer-flow.js"></script>
 
     <script>
         // Initialize sidebar

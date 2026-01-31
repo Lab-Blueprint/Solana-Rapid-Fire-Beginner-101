@@ -72,13 +72,9 @@
             </p>
 
             <div class="slide-deck">
-                <div class="slide-header">
-                    <div class="slide-counter" data-slide-counter></div>
-                </div>
 
                 <div class="slide active">
                     <div class="slide-card my-8">
-                        <div class="slide-kicker">Slide 1</div>
                         <div class="slide-title">Sign, do not log in</div>
                         <div class="slide-subtitle">Your private key signs, your public key verifies. That is your identity.</div>
                     </div>
@@ -110,6 +106,84 @@
                             <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
+                            Try It: Ed25519 Keys + Signature
+                        </div>
+                        <div class="mt-4 space-y-6">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button class="step-nav-btn active" data-identity-step="1">Step 1: Keys</button>
+                                <button class="step-nav-btn" data-identity-step="2" disabled>Step 2: Encrypt</button>
+                                <button class="step-nav-btn" data-identity-step="3" disabled>Step 3: Verify</button>
+                            </div>
+                            <div id="identity-step-1" class="bg-white/70 border border-[#7AB2B2] rounded-xl p-4">
+                                <div class="flex items-center justify-between gap-4 flex-wrap">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">Step 1: Generate a keypair</p>
+                                        <p class="text-xs text-gray-600">Private key stays secret. Public key can be shared.</p>
+                                    </div>
+                                    <button id="identity-generate-keys" class="btn-primary">Generate Keys</button>
+                                </div>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4 text-sm">
+                                    <div>
+                                        <p class="font-semibold text-gray-700">Public Key (Solana format)</p>
+                                        <pre id="identity-public-key" class="bg-white border border-[#7AB2B2] rounded-lg p-3 whitespace-pre-wrap text-xs">Not generated</pre>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-gray-700">Private Key (Base64)</p>
+                                        <pre id="identity-private-key" class="bg-white border border-[#7AB2B2] rounded-lg p-3 whitespace-pre-wrap text-xs">Not generated</pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="identity-step-2" class="bg-white/70 border border-[#7AB2B2] rounded-xl p-4 hidden">
+                                <div class="flex items-center justify-between gap-4 flex-wrap">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">Step 2: Encrypt (Sign) the message</p>
+                                        <p class="text-xs text-gray-600">Public key:</p>
+                                        <p id="identity-public-label" class="text-xs text-gray-800 font-mono break-all">Not generated</p>
+                                    </div>
+                                    <button id="identity-sign" class="btn-secondary">Produce Encrypted Data</button>
+                                </div>
+                                <div class="mt-4 space-y-3 text-sm">
+                                    <label class="text-sm font-semibold text-gray-700">Message (Original Data)</label>
+                                    <textarea id="identity-message" class="w-full border border-[#7AB2B2] rounded-lg p-3 text-sm bg-white" rows="4">Send 5 SOL to Alice</textarea>
+                                    <div>
+                                        <p class="font-semibold text-gray-700">Encrypted Data (Signature)</p>
+                                        <pre id="identity-signature" class="bg-white border border-[#7AB2B2] rounded-lg p-3 whitespace-pre-wrap text-xs">Not signed</pre>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-gray-700">Triple (Public Key + Raw Data + Encrypted Data)</p>
+                                        <pre id="identity-triple" class="bg-white border border-[#7AB2B2] rounded-lg p-3 whitespace-pre-wrap text-xs">Not constructed</pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="identity-step-3" class="bg-white/70 border border-[#7AB2B2] rounded-xl p-4 hidden">
+                                <div class="flex items-center justify-between gap-4 flex-wrap">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">Step 3: Verify the triple</p>
+                                        <p class="text-xs text-gray-600">Use the public key to validate the encrypted data.</p>
+                                    </div>
+                                    <button id="identity-verify" class="btn-secondary">Verify Triple</button>
+                                </div>
+                                <div class="mt-4 space-y-3 text-sm">
+                                    <div>
+                                        <p class="font-semibold text-gray-700">Triple (Public Key + Raw Data + Encrypted Data)</p>
+                                        <pre id="identity-triple-verify" class="bg-white border border-[#7AB2B2] rounded-lg p-3 whitespace-pre-wrap text-xs">Not constructed</pre>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div id="identity-verify-spinner" class="hidden w-4 h-4 border-2 border-[#09637E] border-t-transparent rounded-full animate-spin"></div>
+                                        <p id="identity-status" class="text-sm text-gray-600">Complete step 2 to verify.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box note">
+                        <div class="info-box-title">
+                            <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
                             Key Insight
                         </div>
                         <p class="text-gray-700 text-sm m-0">
@@ -130,7 +204,6 @@
                             <button onclick="txLifecycleAnimation.play()">Play</button>
                             <button onclick="txLifecycleAnimation.pause()">Pause</button>
                             <button onclick="txLifecycleAnimation.reset()">Reset</button>
-                            <button onclick="txLifecycleAnimation.step()" class="ml-auto">Step</button>
                         </div>
                     </div>
 
@@ -295,6 +368,159 @@
             ]
         };
         renderQuiz('quiz-container', quizData);
+    </script>
+
+    <script>
+        const identityDemo = {
+            privateKey: null,
+            publicKey: null,
+            signature: null,
+            rawMessage: '',
+            currentStep: 1,
+            maxStepUnlocked: 1,
+
+            async generateKeys() {
+                const keyPair = await crypto.subtle.generateKey(
+                    { name: 'Ed25519' },
+                    true,
+                    ['sign', 'verify']
+                );
+                this.privateKey = keyPair.privateKey;
+                this.publicKey = keyPair.publicKey;
+
+                const pubRaw = new Uint8Array(await crypto.subtle.exportKey('raw', keyPair.publicKey));
+                const privPkcs8 = new Uint8Array(await crypto.subtle.exportKey('pkcs8', keyPair.privateKey));
+
+                const pubKey = this.base58Encode(pubRaw);
+                document.getElementById('identity-public-key').textContent = pubKey;
+                document.getElementById('identity-public-label').textContent = pubKey;
+                document.getElementById('identity-private-key').textContent = this.base64Encode(privPkcs8);
+                document.getElementById('identity-signature').textContent = 'Not signed';
+                document.getElementById('identity-triple').textContent = 'Not constructed';
+                document.getElementById('identity-triple-verify').textContent = 'Not constructed';
+                this.maxStepUnlocked = 2;
+                this.setStep(2);
+                document.getElementById('identity-status').textContent = 'Step 1 complete: keys generated.';
+            },
+
+            async signMessage() {
+                if (!this.privateKey) {
+                    document.getElementById('identity-status').textContent = 'Step 1 required: generate keys first.';
+                    return;
+                }
+                const message = document.getElementById('identity-message').value;
+                this.rawMessage = message;
+                const encoded = new TextEncoder().encode(message);
+                const signature = await crypto.subtle.sign(
+                    { name: 'Ed25519' },
+                    this.privateKey,
+                    encoded
+                );
+                this.signature = signature;
+                const signatureBase64 = this.base64Encode(new Uint8Array(signature));
+                document.getElementById('identity-signature').textContent = signatureBase64;
+
+                const publicKeyText = document.getElementById('identity-public-key').textContent;
+                const triple = {
+                    publicKey: publicKeyText,
+                    rawData: message,
+                    encryptedData: signatureBase64
+                };
+                document.getElementById('identity-triple').textContent = JSON.stringify(triple, null, 2);
+                document.getElementById('identity-triple-verify').textContent = JSON.stringify(triple, null, 2);
+                this.maxStepUnlocked = 3;
+                this.setStep(3);
+                document.getElementById('identity-status').textContent = 'Step 2 complete: encrypted data and triple constructed.';
+            },
+
+            async verifyMessage() {
+                if (!this.publicKey || !this.signature) {
+                    document.getElementById('identity-status').textContent = 'Step 2 required: sign the message first.';
+                    return;
+                }
+                const spinner = document.getElementById('identity-verify-spinner');
+                spinner.classList.remove('hidden');
+                document.getElementById('identity-status').textContent = 'Decrypting and comparing data...';
+                await new Promise(resolve => setTimeout(resolve, 700));
+                const message = document.getElementById('identity-message').value;
+                const encoded = new TextEncoder().encode(message);
+                const isValid = await crypto.subtle.verify(
+                    { name: 'Ed25519' },
+                    this.publicKey,
+                    this.signature,
+                    encoded
+                );
+                spinner.classList.add('hidden');
+                document.getElementById('identity-status').textContent = isValid
+                    ? 'Step 3 complete: decrypted data matches the original.'
+                    : 'Verification failed: raw data or encrypted data does not match.';
+            },
+
+            setStep(step) {
+                if (step > this.maxStepUnlocked || step < 1) return;
+                this.currentStep = step;
+                const panels = [
+                    document.getElementById('identity-step-1'),
+                    document.getElementById('identity-step-2'),
+                    document.getElementById('identity-step-3')
+                ];
+                panels.forEach((panel, idx) => {
+                    if (!panel) return;
+                    if (idx + 1 === step) {
+                        panel.classList.remove('hidden');
+                    } else {
+                        panel.classList.add('hidden');
+                    }
+                });
+                const buttons = document.querySelectorAll('[data-identity-step]');
+                buttons.forEach((btn) => {
+                    const btnStep = Number(btn.getAttribute('data-identity-step'));
+                    btn.disabled = btnStep > this.maxStepUnlocked;
+                    btn.classList.toggle('active', btnStep === step);
+                });
+            },
+
+            base64Encode(bytes) {
+                let binary = '';
+                bytes.forEach((b) => { binary += String.fromCharCode(b); });
+                return btoa(binary);
+            },
+
+            base58Encode(bytes) {
+                const alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+                let digits = [0];
+                bytes.forEach((byte) => {
+                    let carry = byte;
+                    for (let i = 0; i < digits.length; i += 1) {
+                        const val = digits[i] * 256 + carry;
+                        digits[i] = val % 58;
+                        carry = Math.floor(val / 58);
+                    }
+                    while (carry > 0) {
+                        digits.push(carry % 58);
+                        carry = Math.floor(carry / 58);
+                    }
+                });
+                let leadingZeros = 0;
+                while (leadingZeros < bytes.length && bytes[leadingZeros] === 0) leadingZeros += 1;
+                let result = '';
+                for (let i = 0; i < leadingZeros; i += 1) result += '1';
+                for (let i = digits.length - 1; i >= 0; i -= 1) {
+                    result += alphabet[digits[i]];
+                }
+                return result;
+            }
+        };
+
+        document.getElementById('identity-generate-keys')?.addEventListener('click', () => identityDemo.generateKeys());
+        document.getElementById('identity-sign')?.addEventListener('click', () => identityDemo.signMessage());
+        document.getElementById('identity-verify')?.addEventListener('click', () => identityDemo.verifyMessage());
+        document.querySelectorAll('[data-identity-step]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const step = Number(btn.getAttribute('data-identity-step'));
+                identityDemo.setStep(step);
+            });
+        });
     </script>
 </body>
 </html>

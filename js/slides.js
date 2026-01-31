@@ -21,6 +21,7 @@ const SlideDeck = {
                 dot.className = 'slide-dot';
                 dot.type = 'button';
                 dot.setAttribute('aria-label', `Go to slide ${idx + 1}`);
+                dot.textContent = `${idx + 1}`;
                 dot.addEventListener('click', () => goTo(idx));
                 dots.appendChild(dot);
             });
