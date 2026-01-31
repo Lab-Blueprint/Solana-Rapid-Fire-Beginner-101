@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programs - Solana 101</title>
+    <meta name="description" content="Understanding Solana programs, accounts, PDAs, and the account model that makes Solana unique.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 1</span>
+                <span>/</span>
+                <span class="text-solana-purple">Programs</span>
+            </div>
+
+            <h1>Programs & Accounts</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Discover Solana's unique account model and how programs (smart contracts) work.
+            </p>
+
+            <h2>Programs: Solana's Smart Contracts</h2>
+
+            <p>
+                On Solana, smart contracts are called <strong>programs</strong>. Unlike Ethereum where contracts store both code and data together, Solana separates them:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-solana-purple/10 rounded-xl p-5 border border-solana-purple/30">
+                    <h3 class="text-solana-purple mt-0 mb-2">Programs</h3>
+                    <p class="text-sm text-gray-700 m-0">Contain executable code only. Stateless - they don't store user data. The same program is used by everyone.</p>
+                </div>
+
+                <div class="bg-solana-green/10 rounded-xl p-5 border border-solana-green/30">
+                    <h3 class="text-solana-green mt-0 mb-2">Accounts</h3>
+                    <p class="text-sm text-gray-700 m-0">Store all data. Each user has their own accounts. Programs read/write to accounts.</p>
+                </div>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Key Insight
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    This separation is why Solana can process transactions in parallel. If two transactions use the same program but different accounts, they don't conflict and can run simultaneously.
+                </p>
+            </div>
+
+            <h2>Accounts: Everything is a File</h2>
+
+            <p>
+                Think of Solana like a filesystem. Every piece of data - your wallet balance, your NFT, your token holdings - is stored in an <strong>account</strong>. Accounts are like files on a computer:
+            </p>
+
+            <!-- Animation Container -->
+            <div class="animation-container my-8">
+                <div id="account-model-animation" class="p-8" style="height: 400px;"></div>
+                <div class="animation-controls">
+                    <button onclick="accountAnimation.play()">Play</button>
+                    <button onclick="accountAnimation.pause()">Pause</button>
+                    <button onclick="accountAnimation.reset()">Reset</button>
+                </div>
+            </div>
+
+            <h3>Account Structure</h3>
+
+            <p>
+                Every account on Solana has these fields:
+            </p>
+
+            <div class="bg-white rounded-xl p-6 border border-[#7AB2B2] my-6">
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <span class="w-20 text-right text-solana-purple font-mono text-sm flex-shrink-0">lamports</span>
+                        <div>
+                            <p class="text-sm text-gray-700 m-0">Balance in lamports (1 SOL = 1 billion lamports). Pays for storage rent.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <span class="w-20 text-right text-solana-green font-mono text-sm flex-shrink-0">data</span>
+                        <div>
+                            <p class="text-sm text-gray-700 m-0">Arbitrary byte array storing the account's state. Can be empty or up to 10MB.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <span class="w-20 text-right text-purple-400 font-mono text-sm flex-shrink-0">owner</span>
+                        <div>
+                            <p class="text-sm text-gray-700 m-0">The program that owns this account. Only the owner can modify the data.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <span class="w-20 text-right text-blue-400 font-mono text-sm flex-shrink-0">executable</span>
+                        <div>
+                            <p class="text-sm text-gray-700 m-0">Boolean flag. If true, the account contains program code.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <span class="w-20 text-right text-yellow-400 font-mono text-sm flex-shrink-0">rent_epoch</span>
+                        <div>
+                            <p class="text-sm text-gray-700 m-0">Tracks rent payments. Accounts must maintain minimum balance to stay alive.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Account Ownership Rules</h2>
+
+            <p>
+                Understanding ownership is crucial for Solana development:
+            </p>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <h4 class="font-semibold m-0">Only the owner can modify data</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 m-0 ml-8">A program can only write to accounts it owns. This prevents unauthorized modifications.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <h4 class="font-semibold m-0">Only the owner can debit lamports</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 m-0 ml-8">The owner program controls withdrawals from the account.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <h4 class="font-semibold m-0">Anyone can credit lamports</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 m-0 ml-8">Any program can deposit SOL into any account - that's how you receive payments.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3 mb-2">
+                        <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <h4 class="font-semibold m-0">Anyone can read data</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 m-0 ml-8">All account data is public and readable by any program.</p>
+                </div>
+            </div>
+
+            <h2>The System Program</h2>
+
+            <p>
+                Your wallet is actually owned by the <strong>System Program</strong> - one of Solana's built-in programs. The System Program:
+            </p>
+
+            <ul>
+                <li>Creates new accounts</li>
+                <li>Allocates space for data</li>
+                <li>Assigns ownership to other programs</li>
+                <li>Transfers SOL between wallets</li>
+            </ul>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>System Program Address</span>
+                </div>
+                <pre><code><span class="code-comment">// The System Program has a special address of all 1s</span>
+<span class="code-keyword">const</span> SYSTEM_PROGRAM_ID = <span class="code-string">"11111111111111111111111111111111"</span></code></pre>
+            </div>
+
+            <h2>PDAs: Program Derived Addresses</h2>
+
+            <p>
+                <strong>PDAs (Program Derived Addresses)</strong> are special accounts that are owned by programs, not users. They're essential for building applications because:
+            </p>
+
+            <ul>
+                <li>Programs can sign transactions on behalf of PDAs</li>
+                <li>PDAs are deterministic - derived from seeds + program ID</li>
+                <li>PDAs cannot be generated with private keys</li>
+            </ul>
+
+            <div class="bg-gradient-to-br from-solana-purple/10 to-solana-green/10 rounded-xl p-6 border border-[#7AB2B2] my-6">
+                <h3 class="mt-0 mb-4">PDA Derivation</h3>
+                <div class="code-block bg-white">
+                    <pre><code><span class="code-comment">// PDAs are derived from seeds and program ID</span>
+<span class="code-keyword">const</span> [pda, bump] = PublicKey.findProgramAddressSync(
+  [
+    Buffer.from(<span class="code-string">"user-stats"</span>),     <span class="code-comment">// Seed 1: string</span>
+    userPubkey.toBuffer(),           <span class="code-comment">// Seed 2: user's public key</span>
+  ],
+  programId                          <span class="code-comment">// The program that will own this PDA</span>
+);
+
+<span class="code-comment">// Same seeds + program always = same PDA</span>
+<span class="code-comment">// Different seeds or program = different PDA</span></code></pre>
+                </div>
+            </div>
+
+            <h3>PDA Use Cases</h3>
+
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <h4 class="text-solana-purple mt-0 mb-2">User Data Storage</h4>
+                    <p class="text-sm text-gray-600 m-0">Store per-user data like profile info, game stats, or settings using their public key as a seed.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <h4 class="text-solana-green mt-0 mb-2">Token Vaults</h4>
+                    <p class="text-sm text-gray-600 m-0">Hold tokens on behalf of users in DeFi protocols. The program can sign transfers.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <h4 class="text-purple-400 mt-0 mb-2">Configuration</h4>
+                    <p class="text-sm text-gray-600 m-0">Store global program settings like admin keys, fee rates, or feature flags.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <h4 class="text-blue-400 mt-0 mb-2">Escrow</h4>
+                    <p class="text-sm text-gray-600 m-0">Hold assets until conditions are met. Program controls release logic.</p>
+                </div>
+            </div>
+
+            <h2>Native Programs</h2>
+
+            <p>
+                Solana includes several built-in programs:
+            </p>
+
+            <div class="space-y-3 my-6">
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <code class="text-xs text-solana-purple bg-solana-purple/10 px-2 py-1 rounded">System</code>
+                    <p class="text-sm text-gray-700 m-0">Creates accounts, transfers SOL, assigns ownership</p>
+                </div>
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <code class="text-xs text-solana-green bg-solana-green/10 px-2 py-1 rounded">Token</code>
+                    <p class="text-sm text-gray-700 m-0">SPL Token program for creating and managing tokens</p>
+                </div>
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <code class="text-xs text-purple-400 bg-purple-400/10 px-2 py-1 rounded">Associated Token</code>
+                    <p class="text-sm text-gray-700 m-0">Deterministic token account addresses for wallets</p>
+                </div>
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <code class="text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded">BPF Loader</code>
+                    <p class="text-sm text-gray-700 m-0">Deploys and upgrades user programs</p>
+                </div>
+            </div>
+
+            <div class="info-box tip">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Explore On-Chain
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Use <a href="https://explorer.solana.com" target="_blank" class="text-solana-green hover:underline">Solana Explorer</a> to examine real accounts. Search for any wallet address to see its data, owner program, and transaction history.
+                </p>
+            </div>
+
+            <h2>Summary</h2>
+
+            <ul>
+                <li>Programs (smart contracts) contain code only, no state</li>
+                <li>Accounts store all data - like files in a filesystem</li>
+                <li>Only the owner program can modify account data</li>
+                <li>PDAs are program-owned accounts derived from seeds</li>
+                <li>The System Program creates accounts and transfers SOL</li>
+                <li>This separation enables Solana's parallel processing</li>
+            </ul>
+
+            <!-- Quiz Section -->
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container"></div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/animations/account-model.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'programs',
+            questions: [
+                {
+                    question: "What is the main difference between Solana programs and Ethereum smart contracts?",
+                    options: [
+                        "Solana programs are faster",
+                        "Solana separates code (programs) from data (accounts)",
+                        "Solana programs use a different language",
+                        "Ethereum contracts can't be upgraded"
+                    ],
+                    correct: 1,
+                    explanation: "Solana separates code (programs) from data (accounts), while Ethereum contracts store both together. This separation enables parallel transaction processing - the key to Solana's speed."
+                },
+                {
+                    question: "Who can modify an account's data on Solana?",
+                    options: [
+                        "Anyone who knows the address",
+                        "Only the account holder",
+                        "Only the owner program",
+                        "Only the System Program"
+                    ],
+                    correct: 2,
+                    explanation: "Only the program that owns an account can modify its data. This ownership model ensures security - unauthorized programs cannot tamper with your data."
+                },
+                {
+                    question: "What is a PDA (Program Derived Address)?",
+                    options: [
+                        "A regular wallet address",
+                        "An account that can only hold SOL",
+                        "A program-owned account derived from seeds",
+                        "A type of transaction"
+                    ],
+                    correct: 2,
+                    explanation: "PDAs are special accounts owned by programs, derived deterministically from seeds and the program ID. Programs can sign on behalf of PDAs, making them essential for DeFi and other applications."
+                },
+                {
+                    question: "What does the System Program do?",
+                    options: [
+                        "Only executes token transfers",
+                        "Creates accounts, allocates space, and transfers SOL",
+                        "Only manages NFTs",
+                        "Validates transactions"
+                    ],
+                    correct: 1,
+                    explanation: "The System Program is one of Solana's core native programs. It creates new accounts, allocates data space, assigns ownership to other programs, and handles SOL transfers between wallets."
+                }
+            ]
+        };
+
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

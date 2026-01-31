@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Concepts - Solana 101</title>
+    <meta name="description" content="Essential Solana development concepts: account types, rent, lamports, seeds, and more.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 2</span>
+                <span>/</span>
+                <span class="text-solana-green">Developer Concepts</span>
+            </div>
+
+            <h1>Developer Concepts</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Master the essential terminology and concepts for Solana development.
+            </p>
+
+            <h2>Lamports: The Smallest Unit</h2>
+
+            <p>
+                Like dollars have cents and Bitcoin has satoshis, SOL has <strong>lamports</strong>. Named after Leslie Lamport, a computer scientist famous for his work on distributed systems.
+            </p>
+
+            <div class="bg-gradient-to-br from-solana-purple/10 to-solana-green/10 rounded-xl p-6 border border-[#7AB2B2] my-6">
+                <div class="text-center">
+                    <div class="text-4xl font-bold mb-2">
+                        <span class="text-solana-purple">1 SOL</span>
+                        <span class="text-gray-500 mx-4">=</span>
+                        <span class="text-solana-green">1,000,000,000 lamports</span>
+                    </div>
+                    <p class="text-gray-600 text-sm m-0">1 billion lamports per SOL</p>
+                </div>
+            </div>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Working with Lamports</span>
+                </div>
+                <pre><code><span class="code-keyword">import</span> { LAMPORTS_PER_SOL } <span class="code-keyword">from</span> <span class="code-string">'@solana/web3.js'</span>;
+
+<span class="code-comment">// Convert SOL to lamports</span>
+<span class="code-keyword">const</span> lamports = <span class="code-number">1.5</span> * LAMPORTS_PER_SOL;  <span class="code-comment">// 1,500,000,000</span>
+
+<span class="code-comment">// Convert lamports to SOL</span>
+<span class="code-keyword">const</span> sol = lamports / LAMPORTS_PER_SOL;  <span class="code-comment">// 1.5</span>
+
+<span class="code-comment">// Transaction fees are ~5000 lamports (0.000005 SOL)</span>
+<span class="code-keyword">const</span> txFee = <span class="code-number">5000</span>;  <span class="code-comment">// ~$0.0007 at $140/SOL</span></code></pre>
+            </div>
+
+            <h2>Rent: Paying for Storage</h2>
+
+            <p>
+                Storing data on Solana costs <strong>rent</strong>. Accounts must maintain a minimum balance to exist on the network. This prevents spam and incentivizes cleanup of unused accounts.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-purple mt-0 mb-2">Rent-Exempt</h4>
+                    <p class="text-sm text-gray-600 m-0">If an account holds 2 years' worth of rent, it's "rent-exempt" and will never be deleted. This is the standard approach.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-green mt-0 mb-2">Rent Collection</h4>
+                    <p class="text-sm text-gray-600 m-0">Accounts below rent-exempt threshold slowly lose lamports. If they hit zero, they're deleted and data is lost.</p>
+                </div>
+            </div>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Calculating Rent</span>
+                </div>
+                <pre><code><span class="code-keyword">import</span> { Connection } <span class="code-keyword">from</span> <span class="code-string">'@solana/web3.js'</span>;
+
+<span class="code-keyword">const</span> connection = <span class="code-keyword">new</span> Connection(<span class="code-string">'https://api.devnet.solana.com'</span>);
+
+<span class="code-comment">// Get minimum rent for account with 100 bytes of data</span>
+<span class="code-keyword">const</span> rentExempt = <span class="code-keyword">await</span> connection.getMinimumBalanceForRentExemption(<span class="code-number">100</span>);
+console.log(<span class="code-string">`Rent: ${rentExempt} lamports`</span>);  <span class="code-comment">// ~1,447,680 lamports</span>
+
+<span class="code-comment">// Rough formula: ~6.96 lamports per byte per year × 2 years</span></code></pre>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Rent is Recoverable
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    When you close an account, you get the rent back! This is why well-designed programs include cleanup functions that close unused accounts and return SOL to users.
+                </p>
+            </div>
+
+            <h2>Account Types</h2>
+
+            <p>
+                Different account types serve different purposes:
+            </p>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-solana-purple/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <span class="text-solana-purple font-bold">W</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Wallet (System Account)</h4>
+                            <p class="text-sm text-gray-600 m-0">Owned by System Program. Holds SOL, can sign transactions. This is your main identity on Solana.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-solana-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <span class="text-solana-green font-bold">T</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Token Account</h4>
+                            <p class="text-sm text-gray-600 m-0">Owned by Token Program. Holds tokens (SPL tokens, not SOL). Each token type needs its own account.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <span class="text-purple-400 font-bold">A</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Associated Token Account (ATA)</h4>
+                            <p class="text-sm text-gray-600 m-0">A token account with a deterministic address. Given a wallet + mint, there's exactly one ATA address.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <span class="text-blue-400 font-bold">P</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Program Account</h4>
+                            <p class="text-sm text-gray-600 m-0">Contains executable bytecode. Marked with executable = true. Immutable after deployment.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <span class="text-yellow-400 font-bold">D</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Data Account (PDA)</h4>
+                            <p class="text-sm text-gray-600 m-0">Program-owned account storing application state. Derived from seeds using PDAs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Seeds and Bumps</h2>
+
+            <p>
+                <strong>Seeds</strong> are the inputs used to derive PDA addresses. They can be strings, public keys, numbers, or any bytes.
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>PDA Derivation with Seeds</span>
+                </div>
+                <pre><code><span class="code-keyword">import</span> { PublicKey } <span class="code-keyword">from</span> <span class="code-string">'@solana/web3.js'</span>;
+
+<span class="code-comment">// Simple string seed</span>
+<span class="code-keyword">const</span> [configPda] = PublicKey.findProgramAddressSync(
+  [Buffer.from(<span class="code-string">"config"</span>)],
+  programId
+);
+
+<span class="code-comment">// Multiple seeds including a public key</span>
+<span class="code-keyword">const</span> [userStatsPda] = PublicKey.findProgramAddressSync(
+  [
+    Buffer.from(<span class="code-string">"user-stats"</span>),
+    userWallet.toBuffer()
+  ],
+  programId
+);
+
+<span class="code-comment">// Using a number as seed</span>
+<span class="code-keyword">const</span> gameId = <span class="code-number">42</span>;
+<span class="code-keyword">const</span> [gamePda] = PublicKey.findProgramAddressSync(
+  [
+    Buffer.from(<span class="code-string">"game"</span>),
+    <span class="code-keyword">new</span> Uint8Array([gameId])  <span class="code-comment">// Convert number to bytes</span>
+  ],
+  programId
+);</code></pre>
+            </div>
+
+            <p>
+                The <strong>bump</strong> is a single byte (0-255) that ensures the derived address is a valid PDA (off the Ed25519 curve). The findProgramAddressSync function automatically finds the correct bump.
+            </p>
+
+            <div class="info-box tip">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Bump Best Practice
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Store the bump in the PDA's data when creating it. This avoids recalculating it each time and saves compute units. The bump is also used when the program needs to sign with the PDA.
+                </p>
+            </div>
+
+            <h2>Cross-Program Invocation (CPI)</h2>
+
+            <p>
+                Programs can call other programs through <strong>CPI</strong>. This is how your program can transfer tokens, create accounts, or interact with other protocols.
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>CPI Example: Transfer SOL</span>
+                </div>
+                <pre><code><span class="code-comment">// In Anchor/Rust</span>
+<span class="code-keyword">use</span> anchor_lang::system_program;
+
+<span class="code-comment">// Transfer SOL from user to vault</span>
+system_program::transfer(
+    CpiContext::new(
+        ctx.accounts.system_program.to_account_info(),
+        system_program::Transfer {
+            from: ctx.accounts.user.to_account_info(),
+            to: ctx.accounts.vault.to_account_info(),
+        },
+    ),
+    amount,
+)?;</code></pre>
+            </div>
+
+            <h2>Compute Units</h2>
+
+            <p>
+                Every transaction has a <strong>compute budget</strong> limiting how much work it can do. Think of it like gas on Ethereum, but pre-paid and with a maximum cap.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-purple mt-0 mb-2">Default Limit</h4>
+                    <p class="text-sm text-gray-600 m-0">200,000 compute units per instruction. Can be increased up to 1.4M per transaction with priority fee.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-green mt-0 mb-2">Optimization</h4>
+                    <p class="text-sm text-gray-600 m-0">Efficient programs use fewer CUs. Avoid unnecessary operations, minimize account reads, and batch operations.</p>
+                </div>
+            </div>
+
+            <h2>Serialization: Borsh</h2>
+
+            <p>
+                Solana uses <strong>Borsh</strong> (Binary Object Representation Serializer for Hashing) to encode/decode account data. It's deterministic and compact.
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Borsh Serialization</span>
+                </div>
+                <pre><code><span class="code-comment">// Define account structure in Anchor</span>
+#[account]
+<span class="code-keyword">pub struct</span> <span class="code-function">UserStats</span> {
+    <span class="code-keyword">pub</span> authority: Pubkey,    <span class="code-comment">// 32 bytes</span>
+    <span class="code-keyword">pub</span> games_played: u64,    <span class="code-comment">// 8 bytes</span>
+    <span class="code-keyword">pub</span> high_score: u64,      <span class="code-comment">// 8 bytes</span>
+    <span class="code-keyword">pub</span> bump: u8,             <span class="code-comment">// 1 byte</span>
+}
+<span class="code-comment">// Total: 8 (discriminator) + 32 + 8 + 8 + 1 = 57 bytes</span></code></pre>
+            </div>
+
+            <h2>Common Patterns</h2>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-purple mt-0 mb-2">Initialize Once</h4>
+                    <p class="text-sm text-gray-600 m-0">Use an "initialized" flag or discriminator to prevent reinitializing accounts and overwriting data.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-green mt-0 mb-2">Authority Pattern</h4>
+                    <p class="text-sm text-gray-600 m-0">Store an "authority" public key in accounts. Check that the signer matches before allowing modifications.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-purple-400 mt-0 mb-2">Close Pattern</h4>
+                    <p class="text-sm text-gray-600 m-0">Implement account closing to return rent. Transfer remaining lamports and zero out data.</p>
+                </div>
+            </div>
+
+            <h2>Summary</h2>
+
+            <ul>
+                <li>1 SOL = 1 billion lamports</li>
+                <li>Rent-exempt accounts require ~2 years of rent upfront</li>
+                <li>Different account types: wallets, token accounts, ATAs, program accounts, PDAs</li>
+                <li>Seeds derive deterministic PDA addresses; bumps ensure they're valid</li>
+                <li>CPI lets programs call other programs</li>
+                <li>Transactions have compute unit limits</li>
+            </ul>
+
+            <!-- Quiz Section -->
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container"></div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'concepts',
+            questions: [
+                {
+                    question: "How many lamports equal 1 SOL?",
+                    options: [
+                        "1 million",
+                        "1 billion",
+                        "1 thousand",
+                        "100 million"
+                    ],
+                    correct: 1,
+                    explanation: "1 SOL = 1,000,000,000 (1 billion) lamports. This is similar to how 1 Bitcoin = 100 million satoshis or 1 dollar = 100 cents."
+                },
+                {
+                    question: "What happens to an account that falls below the rent-exempt threshold?",
+                    options: [
+                        "Nothing, rent is optional",
+                        "It slowly loses lamports and may be deleted",
+                        "It becomes read-only",
+                        "It's automatically topped up"
+                    ],
+                    correct: 1,
+                    explanation: "Accounts below the rent-exempt threshold slowly lose lamports to rent collection. If they reach zero, they're deleted and the data is lost forever."
+                },
+                {
+                    question: "What is the purpose of the bump in a PDA?",
+                    options: [
+                        "To make the address longer",
+                        "To encrypt the data",
+                        "To ensure the address is valid (off the Ed25519 curve)",
+                        "To pay for rent"
+                    ],
+                    correct: 2,
+                    explanation: "The bump is a single byte that ensures the derived PDA address is off the Ed25519 elliptic curve. This guarantees no one can generate a private key for the PDA."
+                },
+                {
+                    question: "What is CPI in Solana?",
+                    options: [
+                        "Central Processing Instruction",
+                        "Cross-Program Invocation - calling another program",
+                        "Crypto Payment Interface",
+                        "Compute Price Index"
+                    ],
+                    correct: 1,
+                    explanation: "CPI (Cross-Program Invocation) allows one program to call another. This is how your program can transfer tokens, create accounts, or interact with DeFi protocols."
+                }
+            ]
+        };
+
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

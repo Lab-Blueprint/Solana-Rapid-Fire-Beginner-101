@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is Solana? - Solana 101</title>
+    <meta name="description" content="Learn about Solana's unique architecture, parallel processing, and high-performance blockchain capabilities.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 1</span>
+                <span>/</span>
+                <span class="text-solana-purple">What is Solana?</span>
+            </div>
+
+            <h1>What is Solana?</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                A high-performance blockchain built for speed, scale, and decentralization.
+            </p>
+
+            <h2>Solana at a Glance</h2>
+
+            <div class="grid md:grid-cols-3 gap-4 my-6">
+                <div class="bg-gradient-to-br from-solana-purple/20 to-transparent rounded-xl p-5 border border-solana-purple/30 text-center">
+                    <div class="text-3xl font-bold text-solana-purple mb-1">65,000+</div>
+                    <div class="text-sm text-gray-600">Transactions per second</div>
+                </div>
+
+                <div class="bg-gradient-to-br from-solana-green/20 to-transparent rounded-xl p-5 border border-solana-green/30 text-center">
+                    <div class="text-3xl font-bold text-solana-green mb-1">400ms</div>
+                    <div class="text-sm text-gray-600">Block time</div>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-500/20 to-transparent rounded-xl p-5 border border-purple-500/30 text-center">
+                    <div class="text-3xl font-bold text-purple-400 mb-1">$0.00025</div>
+                    <div class="text-sm text-gray-600">Average transaction fee</div>
+                </div>
+            </div>
+
+            <p>
+                Solana was created in 2017 by Anatoly Yakovenko, a former Qualcomm engineer. His insight was that blockchains were slow because they lacked a reliable way to track time across distributed nodes.
+            </p>
+
+            <h2>The Speed Problem</h2>
+
+            <p>
+                Most blockchains process transactions <strong>sequentially</strong> - one after another. This is because nodes need to agree on the order of transactions, and without a shared clock, they must wait for messages to travel across the network.
+            </p>
+
+            <p>
+                Imagine a bank where every transaction had to wait in a single line. That's how most blockchains work.
+            </p>
+
+            <h2>Sequential vs Parallel Processing</h2>
+
+            <!-- Animation Container -->
+            <div class="animation-container my-8">
+                <div id="processing-animation" class="p-8" style="height: 350px;"></div>
+                <div class="animation-controls">
+                    <button onclick="processingAnimation.play()">Play</button>
+                    <button onclick="processingAnimation.pause()">Pause</button>
+                    <button onclick="processingAnimation.reset()">Reset</button>
+                </div>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Key Insight
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Solana can process transactions that don't touch the same accounts simultaneously. If Alice sends to Bob, and Carol sends to Dave, these can happen at the same time because they're independent.
+                </p>
+            </div>
+
+            <h2>Proof of History: Solana's Secret Weapon</h2>
+
+            <p>
+                <strong>Proof of History (PoH)</strong> is a cryptographic clock that creates a historical record proving that events occurred at specific moments in time.
+            </p>
+
+            <p>
+                Think of it like a photograph with a newspaper in frame - it proves the photo was taken after that newspaper was published. PoH creates a continuous stream of such "timestamps."
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>How PoH Works (Simplified)</span>
+                </div>
+                <pre><code><span class="code-comment">// Each hash depends on the previous one</span>
+hash_1 = SHA256(initial_state)
+hash_2 = SHA256(hash_1)
+hash_3 = SHA256(hash_2)
+<span class="code-comment">// ... continues endlessly</span>
+
+<span class="code-comment">// Transactions get inserted into the sequence</span>
+hash_100 = SHA256(hash_99)
+hash_101 = SHA256(hash_100 + transaction_data)
+hash_102 = SHA256(hash_101)
+
+<span class="code-comment">// The position proves WHEN the transaction occurred</span></code></pre>
+            </div>
+
+            <p>
+                Because each hash takes a fixed amount of time to compute, the position in the sequence proves passage of time. Validators can verify the order of events without constant communication.
+            </p>
+
+            <h2>Eight Key Innovations</h2>
+
+            <p>
+                Solana combines eight core technologies to achieve its performance:
+            </p>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded-lg flex items-center justify-center text-solana-purple font-bold">1</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Proof of History (PoH)</h4>
+                            <p class="text-sm text-gray-600 m-0">Cryptographic clock for ordering events</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded-lg flex items-center justify-center text-solana-purple font-bold">2</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Tower BFT</h4>
+                            <p class="text-sm text-gray-600 m-0">PoH-optimized version of Byzantine Fault Tolerance</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-solana-green/20 rounded-lg flex items-center justify-center text-solana-green font-bold">3</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Turbine</h4>
+                            <p class="text-sm text-gray-600 m-0">Block propagation protocol (like BitTorrent for blocks)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-solana-green/20 rounded-lg flex items-center justify-center text-solana-green font-bold">4</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Gulf Stream</h4>
+                            <p class="text-sm text-gray-600 m-0">Mempool-less transaction forwarding to validators</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400 font-bold">5</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Sealevel</h4>
+                            <p class="text-sm text-gray-600 m-0">Parallel smart contract runtime</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400 font-bold">6</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Pipelining</h4>
+                            <p class="text-sm text-gray-600 m-0">Transaction processing optimization for GPU hardware</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded-lg flex items-center justify-center text-solana-purple font-bold">7</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Cloudbreak</h4>
+                            <p class="text-sm text-gray-600 m-0">Horizontally-scaled accounts database</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-solana-green/20 rounded-lg flex items-center justify-center text-solana-green font-bold">8</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Archivers</h4>
+                            <p class="text-sm text-gray-600 m-0">Distributed ledger storage</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>The Solana Ecosystem</h2>
+
+            <p>
+                Solana's speed and low costs have attracted a thriving ecosystem:
+            </p>
+
+            <ul>
+                <li><strong>DeFi</strong> - Jupiter, Raydium, Marinade Finance</li>
+                <li><strong>NFTs</strong> - Magic Eden, Tensor, Metaplex</li>
+                <li><strong>Gaming</strong> - Star Atlas, Aurory</li>
+                <li><strong>Payments</strong> - Solana Pay, Helio</li>
+                <li><strong>Infrastructure</strong> - Helius, Jito, Pyth</li>
+            </ul>
+
+            <div class="info-box tip">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Try It Yourself
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Visit <a href="https://solscan.io" target="_blank" class="text-solana-green hover:underline">Solscan.io</a> to see real-time transactions on Solana. Notice how many transactions are confirmed in just seconds!
+                </p>
+            </div>
+
+            <h2>Summary</h2>
+
+            <ul>
+                <li>Solana processes 65,000+ TPS with 400ms block times</li>
+                <li>Proof of History provides a cryptographic clock for ordering events</li>
+                <li>Parallel transaction processing enables massive throughput</li>
+                <li>Eight core innovations work together for performance</li>
+                <li>Low fees (~$0.00025) enable new types of applications</li>
+            </ul>
+
+            <!-- Quiz Section -->
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container"></div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/animations/transaction-flow.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'what-is-solana',
+            questions: [
+                {
+                    question: "What is Proof of History?",
+                    options: [
+                        "A way to mine cryptocurrency",
+                        "A cryptographic clock for ordering events",
+                        "A type of smart contract",
+                        "A wallet application"
+                    ],
+                    correct: 1,
+                    explanation: "Proof of History is a cryptographic clock that creates a historical record proving that events occurred at specific moments in time. This allows Solana to order transactions without constant network communication."
+                },
+                {
+                    question: "Why can Solana process transactions in parallel?",
+                    options: [
+                        "Because it has fewer validators",
+                        "Because transactions that don't touch the same accounts are independent",
+                        "Because it uses a centralized server",
+                        "Because it ignores some transactions"
+                    ],
+                    correct: 1,
+                    explanation: "Solana's Sealevel runtime can identify transactions that don't access the same accounts and process them simultaneously, similar to how modern CPUs handle independent operations."
+                },
+                {
+                    question: "What is Solana's approximate average transaction fee?",
+                    options: [
+                        "$5",
+                        "$0.50",
+                        "$0.00025",
+                        "$0"
+                    ],
+                    correct: 2,
+                    explanation: "Solana's transaction fees average around $0.00025 (a fraction of a cent). This low cost enables applications that would be economically impossible on higher-fee chains."
+                },
+                {
+                    question: "Which innovation enables Solana to propagate blocks like BitTorrent shares files?",
+                    options: [
+                        "Tower BFT",
+                        "Turbine",
+                        "Gulf Stream",
+                        "Sealevel"
+                    ],
+                    correct: 1,
+                    explanation: "Turbine breaks blocks into smaller packets and distributes them across the network in a tree structure, similar to how BitTorrent shares files. This dramatically reduces the time to propagate blocks to all validators."
+                }
+            ]
+        };
+
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

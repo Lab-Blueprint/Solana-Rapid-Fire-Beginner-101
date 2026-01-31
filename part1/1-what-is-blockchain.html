@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is Blockchain? - Solana 101</title>
+    <meta name="description" content="Learn the fundamentals of blockchain technology, decentralized networks, and consensus mechanisms.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 1</span>
+                <span>/</span>
+                <span class="text-solana-purple">What is Blockchain?</span>
+            </div>
+
+            <h1>What is Blockchain?</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Understanding the foundation of decentralized technology and why it matters.
+            </p>
+
+            <h2>The Problem with Centralization</h2>
+
+            <p>
+                Traditional internet services rely on <strong>centralized servers</strong>. When you send a message, make a payment, or store a file, your data flows through servers owned by companies like Google, Amazon, or banks.
+            </p>
+
+            <p>
+                This creates several problems:
+            </p>
+
+            <ul>
+                <li><strong>Single point of failure</strong> - If the server goes down, the service stops</li>
+                <li><strong>Trust requirement</strong> - You must trust the company to handle your data honestly</li>
+                <li><strong>Censorship risk</strong> - The company can deny you access at any time</li>
+                <li><strong>Data vulnerability</strong> - Centralized databases are prime targets for hackers</li>
+            </ul>
+
+            <h2>Client-Server vs Peer-to-Peer</h2>
+
+            <p>
+                Let's visualize the difference between traditional client-server architecture and peer-to-peer networks:
+            </p>
+
+            <!-- Animation Container -->
+            <div class="animation-container my-8">
+                <div id="network-animation" class="p-8" style="height: 400px;"></div>
+                <div class="animation-controls">
+                    <button id="play-btn" onclick="networkAnimation.play()">Play</button>
+                    <button id="pause-btn" onclick="networkAnimation.pause()">Pause</button>
+                    <button id="reset-btn" onclick="networkAnimation.reset()">Reset</button>
+                    <button id="toggle-btn" onclick="networkAnimation.toggle()" class="ml-auto">Switch to P2P</button>
+                </div>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Key Insight
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    In a peer-to-peer network, every participant can communicate with every other participant directly. There's no central authority that can shut down the network or censor transactions.
+                </p>
+            </div>
+
+            <h2>What Makes a Blockchain?</h2>
+
+            <p>
+                A blockchain is a specific type of peer-to-peer network with these properties:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h3 class="text-solana-purple mt-0 mb-2">Distributed Ledger</h3>
+                    <p class="text-sm text-gray-600 m-0">Every participant holds a complete copy of all transaction history. No single entity controls the data.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h3 class="text-solana-green mt-0 mb-2">Immutability</h3>
+                    <p class="text-sm text-gray-600 m-0">Once data is written, it cannot be changed or deleted. Each block links cryptographically to the previous one.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h3 class="text-solana-purple mt-0 mb-2">Consensus</h3>
+                    <p class="text-sm text-gray-600 m-0">Network participants agree on the state of the ledger through mathematical rules, not trust in any authority.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h3 class="text-solana-green mt-0 mb-2">Transparency</h3>
+                    <p class="text-sm text-gray-600 m-0">All transactions are publicly visible and verifiable by anyone. The rules are open source code.</p>
+                </div>
+            </div>
+
+            <h2>How Consensus Works</h2>
+
+            <p>
+                The magic of blockchain is getting thousands of computers to agree on the same truth without trusting each other. This is called <strong>consensus</strong>.
+            </p>
+
+            <p>
+                Different blockchains use different consensus mechanisms:
+            </p>
+
+            <ul>
+                <li><strong>Proof of Work (Bitcoin)</strong> - Miners compete to solve mathematical puzzles. First to solve gets to add the next block.</li>
+                <li><strong>Proof of Stake (Ethereum)</strong> - Validators stake tokens as collateral. Bad behavior means losing their stake.</li>
+                <li><strong>Proof of History (Solana)</strong> - A cryptographic clock provides a trusted source of time, enabling parallel processing.</li>
+            </ul>
+
+            <div class="info-box tip">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Why This Matters
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Proof of History is Solana's key innovation. By establishing a trusted timeline before consensus, Solana can process thousands of transactions in parallel while other blockchains must process them one at a time.
+                </p>
+            </div>
+
+            <h2>The Blockchain Trilemma</h2>
+
+            <p>
+                Every blockchain must balance three competing properties:
+            </p>
+
+            <ul>
+                <li><strong>Security</strong> - Resistance to attacks and fraud</li>
+                <li><strong>Decentralization</strong> - No single point of control</li>
+                <li><strong>Scalability</strong> - Ability to handle many transactions</li>
+            </ul>
+
+            <p>
+                Traditional blockchains like Bitcoin prioritize security and decentralization, but sacrifice scalability (only ~7 transactions per second). Solana's architecture aims to maximize all three.
+            </p>
+
+            <h2>Summary</h2>
+
+            <ul>
+                <li>Blockchains are peer-to-peer networks with no central authority</li>
+                <li>Data is stored in linked blocks that cannot be changed</li>
+                <li>Consensus mechanisms allow agreement without trust</li>
+                <li>Different blockchains make different tradeoffs</li>
+                <li>Solana uses Proof of History for high performance</li>
+            </ul>
+
+            <!-- Quiz Section -->
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container"></div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/animations/blockchain-network.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'what-is-blockchain',
+            questions: [
+                {
+                    question: "What is the main problem with centralized servers?",
+                    options: [
+                        "They are too fast",
+                        "Single point of failure and trust requirements",
+                        "They use too much electricity",
+                        "They are too cheap"
+                    ],
+                    correct: 1,
+                    explanation: "Centralized servers create a single point of failure - if they go down, the service stops. They also require users to trust the company operating them to handle data honestly and not censor access."
+                },
+                {
+                    question: "What makes blockchain data immutable?",
+                    options: [
+                        "Strong passwords",
+                        "Government regulations",
+                        "Cryptographic links between blocks",
+                        "Fast internet connections"
+                    ],
+                    correct: 2,
+                    explanation: "Each block contains a cryptographic hash of the previous block, creating a chain. Changing any historical data would break these links and be immediately detectable by the network."
+                },
+                {
+                    question: "What is consensus in blockchain?",
+                    options: [
+                        "A type of cryptocurrency",
+                        "Agreement on the state of the ledger through mathematical rules",
+                        "A company that runs the network",
+                        "The speed of transactions"
+                    ],
+                    correct: 1,
+                    explanation: "Consensus is how network participants agree on which transactions are valid and in what order they occurred, without needing to trust any central authority."
+                },
+                {
+                    question: "What is Solana's key innovation for achieving high performance?",
+                    options: [
+                        "Proof of Work",
+                        "Bigger blocks",
+                        "Proof of History",
+                        "Fewer validators"
+                    ],
+                    correct: 2,
+                    explanation: "Proof of History creates a cryptographic clock that establishes a trusted timeline before consensus. This allows Solana to process thousands of transactions in parallel instead of sequentially."
+                }
+            ]
+        };
+
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

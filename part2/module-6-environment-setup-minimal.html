@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Setup (Minimal) - Solana 101</title>
+    <meta name="description" content="Set up the minimum Solana development environment.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 2</span>
+                <span>/</span>
+                <span class="text-solana-purple">Environment Setup (Minimal)</span>
+            </div>
+
+            <h1>Environment Setup (Minimal)</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Get the minimal toolchain running so you can start coding quickly.
+            </p>
+
+            <div class="slide-deck">
+                <div class="slide-header">
+                    <div class="slide-counter" data-slide-counter></div>
+                </div>
+
+                <div class="slide active">
+                    <div class="slide-card my-8">
+                        <div class="slide-kicker">Slide 1</div>
+                        <div class="slide-title">Minimal setup, maximum progress</div>
+                        <div class="slide-subtitle">Playground first, then a small local toolchain if needed.</div>
+                    </div>
+
+                    <h2>Learning Objective</h2>
+                    <ul>
+                        <li>Choose between fast path (Playground) or local install</li>
+                        <li>Install minimal local tools: Rust, Solana CLI, Anchor, Node.js</li>
+                        <li>Verify installation with simple commands</li>
+                    </ul>
+
+                    <h2>What to Expect</h2>
+                    <ul>
+                        <li>Fast path with no installation</li>
+                        <li>Minimal local setup steps</li>
+                        <li>Checklist to track progress</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>Fast Path (No Install)</h2>
+                    <p>
+                        If you want to experiment without setup, use Solana Playground in your browser. It's the quickest way to get started.
+                    </p>
+                </div>
+
+                <div class="slide">
+                    <h2>Minimal Local Setup</h2>
+                    <div class="code-block my-6">
+                        <div class="code-block-header">
+                            <span>Install Rust</span>
+                        </div>
+                        <pre><code>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+rustc --version</code></pre>
+                    </div>
+
+                    <div class="code-block my-6">
+                        <div class="code-block-header">
+                            <span>Install Solana CLI</span>
+                        </div>
+                        <pre><code>sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+solana --version</code></pre>
+                    </div>
+
+                    <div class="code-block my-6">
+                        <div class="code-block-header">
+                            <span>Install Anchor</span>
+                        </div>
+                        <pre><code>cargo install --git https://github.com/coral-xyz/anchor avm --locked
+avm install latest
+avm use latest
+anchor --version</code></pre>
+                    </div>
+
+                    <div class="code-block my-6">
+                        <div class="code-block-header">
+                            <span>Install Node.js</span>
+                        </div>
+                        <pre><code>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+nvm install 20
+node --version
+npm --version</code></pre>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Checklist</h2>
+                    <div class="checklist" id="setup-checklist">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-playground" data-checklist>
+                            <label for="check-playground">Tried Solana Playground (optional)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-rust" data-checklist>
+                            <label for="check-rust">Installed Rust toolchain</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-solana" data-checklist>
+                            <label for="check-solana">Installed Solana CLI</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-anchor" data-checklist>
+                            <label for="check-anchor">Installed Anchor</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check-node" data-checklist>
+                            <label for="check-node">Installed Node.js</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Checkpoint Quiz</h2>
+                    <div id="quiz-container"></div>
+                </div>
+
+                <div class="slide-nav">
+                    <button data-slide-prev>Previous</button>
+                    <div class="slide-dots" data-slide-dots></div>
+                    <button data-slide-next>Next</button>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/slides.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Checklist persistence
+        const checklistKey = 'solana101-setup-checklist';
+        const checklistItems = document.querySelectorAll('[data-checklist]');
+
+        function loadChecklist() {
+            const saved = JSON.parse(localStorage.getItem(checklistKey) || '{}');
+            checklistItems.forEach((item) => {
+                if (saved[item.id]) {
+                    item.checked = true;
+                    item.closest('.checklist-item').classList.add('checked');
+                }
+            });
+        }
+
+        function saveChecklist() {
+            const data = {};
+            checklistItems.forEach((item) => {
+                data[item.id] = item.checked;
+            });
+            localStorage.setItem(checklistKey, JSON.stringify(data));
+        }
+
+        checklistItems.forEach((item) => {
+            item.addEventListener('change', () => {
+                const row = item.closest('.checklist-item');
+                if (row) {
+                    row.classList.toggle('checked', item.checked);
+                }
+                saveChecklist();
+            });
+        });
+
+        loadChecklist();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'module-6-environment-setup',
+            questions: [
+                {
+                    question: "Which tool compiles Solana programs?",
+                    options: [
+                        "Solana CLI",
+                        "Rust compiler (rustc)",
+                        "Node.js",
+                        "Phantom"
+                    ],
+                    correct: 1,
+                    explanation: "Programs are written in Rust and compiled with rustc/cargo."
+                },
+                {
+                    question: "Which network is recommended for testing?",
+                    options: [
+                        "Mainnet",
+                        "Devnet",
+                        "Localnet only",
+                        "Beta"
+                    ],
+                    correct: 1,
+                    explanation: "Devnet is the common public test network."
+                },
+                {
+                    question: "What is Anchor used for?",
+                    options: [
+                        "Managing wallets",
+                        "Framework for building Solana programs",
+                        "Running validators",
+                        "Storing NFTs"
+                    ],
+                    correct: 1,
+                    explanation: "Anchor is the most common Solana framework."
+                },
+                {
+                    question: "The fastest way to start coding without installs is:",
+                    options: [
+                        "Solana Playground",
+                        "Mainnet",
+                        "A hardware wallet",
+                        "Running a validator"
+                    ],
+                    correct: 0,
+                    explanation: "Playground runs in the browser."
+                },
+                {
+                    question: "The Solana CLI is used to:",
+                    options: [
+                        "Design logos",
+                        "Interact with the network",
+                        "Compile Rust",
+                        "Generate NFTs only"
+                    ],
+                    correct: 1,
+                    explanation: "CLI helps manage wallets and network interactions."
+                },
+                {
+                    question: "What does Node.js help with in Solana dev?",
+                    options: [
+                        "Writing Anchor programs",
+                        "Running tests and scripts",
+                        "Signing transactions",
+                        "Storing accounts"
+                    ],
+                    correct: 1,
+                    explanation: "Tests are commonly written in TypeScript/JS."
+                },
+                {
+                    question: "Which step ensures Solana CLI is available in your shell?",
+                    options: [
+                        "Setting PATH to the install directory",
+                        "Restarting the validator",
+                        "Running anchor test",
+                        "Deleting cargo cache"
+                    ],
+                    correct: 0,
+                    explanation: "PATH must include the CLI location."
+                },
+                {
+                    question: "AVM is used for:",
+                    options: [
+                        "Managing Anchor versions",
+                        "Managing wallets",
+                        "Storing NFTs",
+                        "Running RPC"
+                    ],
+                    correct: 0,
+                    explanation: "AVM is Anchor Version Manager."
+                },
+                {
+                    question: "Which command checks Rust installation?",
+                    options: [
+                        "rustc --version",
+                        "solana --version",
+                        "anchor --version",
+                        "node --version"
+                    ],
+                    correct: 0,
+                    explanation: "rustc outputs the compiler version."
+                },
+                {
+                    question: "Which step is optional if you use Playground?",
+                    options: [
+                        "Installing Rust locally",
+                        "Learning the concepts",
+                        "Writing code",
+                        "Understanding PDAs"
+                    ],
+                    correct: 0,
+                    explanation: "Playground skips local installs."
+                }
+            ]
+        };
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

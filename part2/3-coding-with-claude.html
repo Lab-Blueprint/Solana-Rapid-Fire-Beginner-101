@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding with Claude - Solana 101</title>
+    <meta name="description" content="Learn to build Solana programs with Claude Code - from setup to deploying a Wall of Wishes dApp.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 2</span>
+                <span>/</span>
+                <span class="text-solana-green">Coding with Claude</span>
+            </div>
+
+            <h1>Coding with Claude</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Build a "Wall of Wishes" dApp on Solana using Claude Code as your AI pair programmer.
+            </p>
+
+            <h2>What is Claude Code?</h2>
+
+            <p>
+                <strong>Claude Code</strong> is an AI-powered coding assistant that can help you write, debug, and understand code. For Solana development, it can:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-purple mt-0 mb-2">Generate Programs</h4>
+                    <p class="text-sm text-gray-600 m-0">Write Anchor programs from natural language descriptions of what you want to build.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-green mt-0 mb-2">Explain Code</h4>
+                    <p class="text-sm text-gray-600 m-0">Understand existing Solana programs by asking questions about how they work.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-purple-400 mt-0 mb-2">Debug Issues</h4>
+                    <p class="text-sm text-gray-600 m-0">Get help fixing errors, understanding transaction failures, and resolving build issues.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-blue-400 mt-0 mb-2">Write Tests</h4>
+                    <p class="text-sm text-gray-600 m-0">Generate comprehensive tests for your programs to ensure they work correctly.</p>
+                </div>
+            </div>
+
+            <h2>Setting Up for Solana Projects</h2>
+
+            <p>
+                To get the best results from Claude Code for Solana development:
+            </p>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded-lg flex items-center justify-center text-solana-purple font-bold flex-shrink-0">1</span>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Start with Context</h4>
+                            <p class="text-sm text-gray-600 m-0">Tell Claude you're building a Solana program with Anchor. Mention your Solana CLI and Anchor versions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded-lg flex items-center justify-center text-solana-purple font-bold flex-shrink-0">2</span>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Be Specific</h4>
+                            <p class="text-sm text-gray-600 m-0">Describe account structures, instruction parameters, and expected behaviors clearly.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded-lg flex items-center justify-center text-solana-purple font-bold flex-shrink-0">3</span>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Share Error Messages</h4>
+                            <p class="text-sm text-gray-600 m-0">When debugging, paste the full error message and relevant code for context.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded-lg flex items-center justify-center text-solana-purple font-bold flex-shrink-0">4</span>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Iterate Incrementally</h4>
+                            <p class="text-sm text-gray-600 m-0">Build features one at a time. Test each part before adding complexity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Effective Prompting Strategies</h2>
+
+            <div class="info-box note mb-6">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Prompt Structure
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Good prompts include: <strong>Context</strong> (what you're building), <strong>Goal</strong> (what you want Claude to do), <strong>Constraints</strong> (requirements or limitations), and <strong>Examples</strong> (if helpful).
+                </p>
+            </div>
+
+            <div class="space-y-6 my-6">
+                <div class="bg-gradient-to-br from-green-900/20 to-transparent rounded-xl p-6 border border-green-500/30">
+                    <h4 class="text-green-400 mt-0 mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Good Prompt
+                    </h4>
+                    <p class="text-sm text-gray-700 mb-3">
+                        "I'm building an Anchor program for a wishlist dApp. I need an instruction called 'create_wish' that:
+                    </p>
+                    <ul class="text-sm text-gray-700 m-0 ml-4">
+                        <li>Takes a wish text (max 280 chars) and author name</li>
+                        <li>Creates a PDA derived from ["wish", author pubkey, wish_count]</li>
+                        <li>Stores: author, text, timestamp, bump</li>
+                        <li>Increments a global wish counter</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-red-900/20 to-transparent rounded-xl p-6 border border-red-500/30">
+                    <h4 class="text-red-400 mt-0 mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Vague Prompt
+                    </h4>
+                    <p class="text-sm text-gray-700 m-0">
+                        "Make me a Solana app for wishes"
+                    </p>
+                </div>
+            </div>
+
+            <h2>Project: Wall of Wishes</h2>
+
+            <p>
+                Let's build a simple dApp where users can post wishes to a public "wall." We'll use Claude Code to guide us through the implementation.
+            </p>
+
+            <div class="bg-gradient-to-br from-solana-purple/10 to-solana-green/10 rounded-xl p-6 border border-[#7AB2B2] my-6">
+                <h3 class="mt-0 mb-4">Project Requirements</h3>
+                <ul class="text-gray-700 m-0">
+                    <li>Users can create wishes (text + author name)</li>
+                    <li>Each wish is stored in its own PDA</li>
+                    <li>Wishes are publicly readable</li>
+                    <li>Track total wish count</li>
+                    <li>Maximum 280 characters per wish</li>
+                </ul>
+            </div>
+
+            <h3>Step 1: Create the Project</h3>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Initialize Project</span>
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                </div>
+                <pre><code><span class="code-comment"># Create new Anchor project</span>
+anchor init wall_of_wishes
+cd wall_of_wishes
+
+<span class="code-comment"># Open in your editor</span>
+code .</code></pre>
+            </div>
+
+            <h3>Step 2: Ask Claude to Generate the Program</h3>
+
+            <p>Use this prompt with Claude Code:</p>
+
+            <div class="bg-white rounded-xl p-5 border border-[#7AB2B2] my-6">
+                <p class="text-gray-700 text-sm m-0 italic">
+                    "I'm building a Wall of Wishes Anchor program. Please create the lib.rs file with:
+                    <br><br>
+                    1. A 'WishCounter' account (PDA with seed "counter") storing total_wishes (u64) and bump (u8)
+                    <br>
+                    2. A 'Wish' account (PDA with seeds ["wish", author, wish_number]) storing author (Pubkey), text (String max 280), author_name (String max 50), timestamp (i64), bump (u8)
+                    <br><br>
+                    Instructions needed:
+                    <br>
+                    - initialize: Create the counter PDA (only callable once)
+                    <br>
+                    - create_wish: Create a new wish, increment counter
+                    <br><br>
+                    Use Anchor 0.30.x conventions."
+                </p>
+            </div>
+
+            <h3>Step 3: Example Implementation</h3>
+
+            <p>Claude might generate something like this:</p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>programs/wall_of_wishes/src/lib.rs</span>
+                </div>
+                <pre><code><span class="code-keyword">use</span> anchor_lang::prelude::*;
+
+declare_id!(<span class="code-string">"YOUR_PROGRAM_ID"</span>);
+
+<span class="code-keyword">const</span> MAX_TEXT_LENGTH: usize = <span class="code-number">280</span>;
+<span class="code-keyword">const</span> MAX_NAME_LENGTH: usize = <span class="code-number">50</span>;
+
+#[program]
+<span class="code-keyword">pub mod</span> wall_of_wishes {
+    <span class="code-keyword">use super</span>::*;
+
+    <span class="code-keyword">pub fn</span> <span class="code-function">initialize</span>(ctx: Context&lt;Initialize&gt;) -> Result&lt;()&gt; {
+        <span class="code-keyword">let</span> counter = &<span class="code-keyword">mut</span> ctx.accounts.counter;
+        counter.total_wishes = <span class="code-number">0</span>;
+        counter.bump = ctx.bumps.counter;
+        Ok(())
+    }
+
+    <span class="code-keyword">pub fn</span> <span class="code-function">create_wish</span>(
+        ctx: Context&lt;CreateWish&gt;,
+        text: String,
+        author_name: String,
+    ) -> Result&lt;()&gt; {
+        require!(text.len() <= MAX_TEXT_LENGTH, WishError::TextTooLong);
+        require!(author_name.len() <= MAX_NAME_LENGTH, WishError::NameTooLong);
+
+        <span class="code-keyword">let</span> counter = &<span class="code-keyword">mut</span> ctx.accounts.counter;
+        <span class="code-keyword">let</span> wish = &<span class="code-keyword">mut</span> ctx.accounts.wish;
+
+        wish.author = ctx.accounts.author.key();
+        wish.text = text;
+        wish.author_name = author_name;
+        wish.timestamp = Clock::get()?.unix_timestamp;
+        wish.wish_number = counter.total_wishes;
+        wish.bump = ctx.bumps.wish;
+
+        counter.total_wishes += <span class="code-number">1</span>;
+
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+<span class="code-keyword">pub struct</span> <span class="code-function">Initialize</span>&lt;'info&gt; {
+    #[account(
+        init,
+        payer = payer,
+        space = <span class="code-number">8</span> + WishCounter::INIT_SPACE,
+        seeds = [b<span class="code-string">"counter"</span>],
+        bump
+    )]
+    <span class="code-keyword">pub</span> counter: Account&lt;'info, WishCounter&gt;,
+    #[account(mut)]
+    <span class="code-keyword">pub</span> payer: Signer&lt;'info&gt;,
+    <span class="code-keyword">pub</span> system_program: Program&lt;'info, System&gt;,
+}
+
+#[derive(Accounts)]
+#[instruction(text: String, author_name: String)]
+<span class="code-keyword">pub struct</span> <span class="code-function">CreateWish</span>&lt;'info&gt; {
+    #[account(
+        init,
+        payer = author,
+        space = <span class="code-number">8</span> + Wish::INIT_SPACE,
+        seeds = [b<span class="code-string">"wish"</span>, author.key().as_ref(), &counter.total_wishes.to_le_bytes()],
+        bump
+    )]
+    <span class="code-keyword">pub</span> wish: Account&lt;'info, Wish&gt;,
+    #[account(
+        mut,
+        seeds = [b<span class="code-string">"counter"</span>],
+        bump = counter.bump
+    )]
+    <span class="code-keyword">pub</span> counter: Account&lt;'info, WishCounter&gt;,
+    #[account(mut)]
+    <span class="code-keyword">pub</span> author: Signer&lt;'info&gt;,
+    <span class="code-keyword">pub</span> system_program: Program&lt;'info, System&gt;,
+}
+
+#[account]
+#[derive(InitSpace)]
+<span class="code-keyword">pub struct</span> <span class="code-function">WishCounter</span> {
+    <span class="code-keyword">pub</span> total_wishes: u64,
+    <span class="code-keyword">pub</span> bump: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+<span class="code-keyword">pub struct</span> <span class="code-function">Wish</span> {
+    <span class="code-keyword">pub</span> author: Pubkey,
+    #[max_len(<span class="code-number">280</span>)]
+    <span class="code-keyword">pub</span> text: String,
+    #[max_len(<span class="code-number">50</span>)]
+    <span class="code-keyword">pub</span> author_name: String,
+    <span class="code-keyword">pub</span> timestamp: i64,
+    <span class="code-keyword">pub</span> wish_number: u64,
+    <span class="code-keyword">pub</span> bump: u8,
+}
+
+#[error_code]
+<span class="code-keyword">pub enum</span> <span class="code-function">WishError</span> {
+    #[msg(<span class="code-string">"Wish text exceeds 280 characters"</span>)]
+    TextTooLong,
+    #[msg(<span class="code-string">"Author name exceeds 50 characters"</span>)]
+    NameTooLong,
+}</code></pre>
+            </div>
+
+            <h3>Step 4: Build and Test</h3>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Build and Test</span>
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                </div>
+                <pre><code><span class="code-comment"># Build the program</span>
+anchor build
+
+<span class="code-comment"># Get your program ID</span>
+solana address -k target/deploy/wall_of_wishes-keypair.json
+
+<span class="code-comment"># Update declare_id! in lib.rs with the address above</span>
+<span class="code-comment"># Also update Anchor.toml [programs.localnet] section</span>
+
+<span class="code-comment"># Rebuild with correct program ID</span>
+anchor build
+
+<span class="code-comment"># Run tests</span>
+anchor test</code></pre>
+            </div>
+
+            <h3>Step 5: Ask Claude to Generate Tests</h3>
+
+            <p>Use this prompt:</p>
+
+            <div class="bg-white rounded-xl p-5 border border-[#7AB2B2] my-6">
+                <p class="text-gray-700 text-sm m-0 italic">
+                    "Generate TypeScript tests for my Wall of Wishes program. Test:
+                    <br>
+                    1. Initialize the counter
+                    <br>
+                    2. Create a wish and verify it's stored correctly
+                    <br>
+                    3. Create multiple wishes and verify counter increments
+                    <br>
+                    4. Try creating a wish with text over 280 chars (should fail)"
+                </p>
+            </div>
+
+            <h2>Try It in Solana Playground</h2>
+
+            <p>
+                You can experiment with this code directly in Solana Playground without any local setup:
+            </p>
+
+            <div class="my-6">
+                <iframe
+                    src="https://beta.solpg.io/?embed=true"
+                    class="playground-embed"
+                    title="Solana Playground"
+                    allow="clipboard-write"
+                ></iframe>
+            </div>
+
+            <h2>Best Practices</h2>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-purple mt-0 mb-2">Review Generated Code</h4>
+                    <p class="text-sm text-gray-600 m-0">Always review and understand code before deploying. Claude can make mistakes, especially with complex account constraints.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-green mt-0 mb-2">Test Thoroughly</h4>
+                    <p class="text-sm text-gray-600 m-0">Write tests for happy paths, edge cases, and error conditions. Ask Claude to help generate comprehensive test suites.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-purple-400 mt-0 mb-2">Security Review</h4>
+                    <p class="text-sm text-gray-600 m-0">For production programs, always get a security audit. Ask Claude about common vulnerabilities like missing signer checks or unsafe arithmetic.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-blue-400 mt-0 mb-2">Iterate and Learn</h4>
+                    <p class="text-sm text-gray-600 m-0">Use Claude to understand why code works, not just to generate it. Ask follow-up questions to deepen your knowledge.</p>
+                </div>
+            </div>
+
+            <div class="info-box tip">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Continue Learning
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    This course covered the fundamentals. Continue your journey at <a href="https://solana.com/developers" target="_blank" class="text-solana-green hover:underline">solana.com/developers</a> and the <a href="https://www.anchor-lang.com/" target="_blank" class="text-solana-green hover:underline">Anchor documentation</a>.
+                </p>
+            </div>
+
+            <h2>Summary</h2>
+
+            <ul>
+                <li>Claude Code accelerates Solana development by generating and explaining code</li>
+                <li>Use specific, detailed prompts for best results</li>
+                <li>Always review and test generated code</li>
+                <li>Build incrementally, testing each feature</li>
+                <li>Use Solana Playground for quick experimentation</li>
+            </ul>
+
+            <h2>Congratulations!</h2>
+
+            <div class="bg-gradient-to-br from-solana-purple/20 to-solana-green/20 rounded-xl p-8 border border-[#7AB2B2] my-6 text-center">
+                <div class="text-4xl mb-4">🎉</div>
+                <h3 class="mt-0 mb-4">You've completed Solana Rapid-Fire Beginner 101!</h3>
+                <p class="text-gray-700 mb-6">
+                    You now understand blockchain fundamentals, Solana's architecture, and how to build your first programs.
+                </p>
+                <a href="../index.html" class="inline-block px-6 py-3 bg-gradient-to-r from-solana-purple to-solana-green rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                    Back to Home
+                </a>
+            </div>
+
+            <!-- Quiz Section -->
+            <h2>Final Quiz</h2>
+            <div id="quiz-container"></div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Copy code function
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => button.textContent = 'Copy', 2000);
+            });
+        }
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'coding-with-claude',
+            questions: [
+                {
+                    question: "What makes a good prompt for Claude Code when building Solana programs?",
+                    options: [
+                        "Keep it as short as possible",
+                        "Include context, goals, constraints, and examples",
+                        "Only mention the programming language",
+                        "Avoid technical details"
+                    ],
+                    correct: 1,
+                    explanation: "Good prompts include context (what you're building), goals (what you want Claude to do), constraints (requirements or limitations), and examples when helpful. More specific prompts lead to better results."
+                },
+                {
+                    question: "In the Wall of Wishes program, why do we use a PDA for the counter?",
+                    options: [
+                        "PDAs are faster",
+                        "To ensure there's only one counter owned by the program",
+                        "PDAs are required for all accounts",
+                        "To save on rent"
+                    ],
+                    correct: 1,
+                    explanation: "The counter uses a PDA with a fixed seed ('counter') to ensure there's exactly one counter account per program, owned by the program itself. This prevents users from creating multiple counters."
+                },
+                {
+                    question: "What should you always do with code generated by Claude?",
+                    options: [
+                        "Deploy it immediately",
+                        "Share it without review",
+                        "Review, understand, and test it thoroughly",
+                        "Assume it's always correct"
+                    ],
+                    correct: 2,
+                    explanation: "Always review and understand generated code before using it. Claude can make mistakes, especially with complex constraints. Test thoroughly and get security audits for production code."
+                },
+                {
+                    question: "What is the purpose of the 'bump' stored in PDA accounts?",
+                    options: [
+                        "To make the account bigger",
+                        "For decoration",
+                        "To verify the PDA and allow the program to sign with it",
+                        "To track account age"
+                    ],
+                    correct: 2,
+                    explanation: "Storing the bump allows efficient PDA verification and enables the program to sign transactions on behalf of the PDA using its seeds plus bump. Without the bump, the program would need to recalculate it each time."
+                }
+            ]
+        };
+
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

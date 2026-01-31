@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Setup - Solana 101</title>
+    <meta name="description" content="Set up your Solana development environment: install Rust, Solana CLI, and Anchor framework.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 2</span>
+                <span>/</span>
+                <span class="text-solana-green">Environment Setup</span>
+            </div>
+
+            <h1>Environment Setup</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Get your development environment ready for Solana programming.
+            </p>
+
+            <div class="info-box tip mb-8">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Quick Alternative
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    If you just want to experiment without local setup, use <a href="https://beta.solpg.io" target="_blank" class="text-solana-green hover:underline">Solana Playground</a> - a browser-based IDE that requires no installation!
+                </p>
+            </div>
+
+            <h2>Prerequisites</h2>
+
+            <p>Before starting, ensure you have:</p>
+
+            <ul>
+                <li><strong>macOS, Linux, or WSL2 on Windows</strong> (native Windows is not fully supported)</li>
+                <li><strong>Terminal access</strong></li>
+                <li><strong>4GB+ RAM</strong> (8GB recommended)</li>
+                <li><strong>Code editor</strong> (VS Code recommended)</li>
+            </ul>
+
+            <h2>Step 1: Install Rust</h2>
+
+            <p>
+                Solana programs are written in <strong>Rust</strong>. Install it using rustup, the official Rust installer.
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Install Rust</span>
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                </div>
+                <pre><code><span class="code-comment"># Install rustup (Rust installer)</span>
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+<span class="code-comment"># Follow the prompts, then reload your shell</span>
+source $HOME/.cargo/env
+
+<span class="code-comment"># Verify installation</span>
+rustc --version
+<span class="code-comment"># Should output something like: rustc 1.75.0</span></code></pre>
+            </div>
+
+            <!-- Checklist -->
+            <div class="checklist" x-data="{ rustInstalled: false }">
+                <div class="checklist-item" :class="{ checked: rustInstalled }">
+                    <input type="checkbox" id="rust-check" x-model="rustInstalled">
+                    <label for="rust-check">
+                        <strong>Rust installed</strong> - Run <code>rustc --version</code> to verify
+                    </label>
+                </div>
+            </div>
+
+            <h2>Step 2: Install Solana CLI</h2>
+
+            <p>
+                The Solana CLI tools let you interact with the network, manage wallets, and deploy programs.
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Install Solana CLI</span>
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                </div>
+                <pre><code><span class="code-comment"># Install Solana CLI (use stable version)</span>
+sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+
+<span class="code-comment"># Add to PATH (may already be done)</span>
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+
+<span class="code-comment"># Verify installation</span>
+solana --version
+<span class="code-comment"># Should output something like: solana-cli 1.18.x</span></code></pre>
+            </div>
+
+            <h3>Configure Solana CLI</h3>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Initial Configuration</span>
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                </div>
+                <pre><code><span class="code-comment"># Set CLI to use devnet (test network)</span>
+solana config set --url devnet
+
+<span class="code-comment"># Generate a new keypair (wallet)</span>
+solana-keygen new
+
+<span class="code-comment"># View your wallet address</span>
+solana address
+
+<span class="code-comment"># Get free devnet SOL for testing</span>
+solana airdrop 2
+
+<span class="code-comment"># Check your balance</span>
+solana balance</code></pre>
+            </div>
+
+            <div class="info-box warning">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    Keypair Security
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Your keypair is stored at <code>~/.config/solana/id.json</code>. This is fine for devnet, but for mainnet, use a hardware wallet or a more secure setup.
+                </p>
+            </div>
+
+            <!-- Checklist -->
+            <div class="checklist" x-data="{ solanaInstalled: false, configured: false, funded: false }">
+                <div class="checklist-item" :class="{ checked: solanaInstalled }">
+                    <input type="checkbox" id="solana-check" x-model="solanaInstalled">
+                    <label for="solana-check">
+                        <strong>Solana CLI installed</strong> - Run <code>solana --version</code>
+                    </label>
+                </div>
+                <div class="checklist-item" :class="{ checked: configured }">
+                    <input type="checkbox" id="config-check" x-model="configured">
+                    <label for="config-check">
+                        <strong>Configured for devnet</strong> - Run <code>solana config get</code>
+                    </label>
+                </div>
+                <div class="checklist-item" :class="{ checked: funded }">
+                    <input type="checkbox" id="funded-check" x-model="funded">
+                    <label for="funded-check">
+                        <strong>Wallet funded</strong> - Run <code>solana balance</code>
+                    </label>
+                </div>
+            </div>
+
+            <h2>Step 3: Install Anchor</h2>
+
+            <p>
+                <strong>Anchor</strong> is the most popular framework for Solana development. It provides:
+            </p>
+
+            <ul>
+                <li>Simplified program structure with macros</li>
+                <li>Automatic account validation</li>
+                <li>TypeScript client generation</li>
+                <li>Built-in testing framework</li>
+            </ul>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Install Anchor</span>
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                </div>
+                <pre><code><span class="code-comment"># Install AVM (Anchor Version Manager)</span>
+cargo install --git https://github.com/coral-xyz/anchor avm --locked
+
+<span class="code-comment"># Install latest Anchor version</span>
+avm install latest
+avm use latest
+
+<span class="code-comment"># Verify installation</span>
+anchor --version
+<span class="code-comment"># Should output something like: anchor-cli 0.30.x</span></code></pre>
+            </div>
+
+            <h3>Create Your First Project</h3>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Initialize Anchor Project</span>
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                </div>
+                <pre><code><span class="code-comment"># Create a new project</span>
+anchor init my_first_program
+cd my_first_program
+
+<span class="code-comment"># Project structure:</span>
+<span class="code-comment"># ├── programs/       # Rust program code</span>
+<span class="code-comment"># ├── tests/          # TypeScript tests</span>
+<span class="code-comment"># ├── app/            # Frontend (optional)</span>
+<span class="code-comment"># ├── Anchor.toml     # Project config</span>
+<span class="code-comment"># └── Cargo.toml      # Rust dependencies</span>
+
+<span class="code-comment"># Build the program</span>
+anchor build
+
+<span class="code-comment"># Run tests</span>
+anchor test</code></pre>
+            </div>
+
+            <!-- Checklist -->
+            <div class="checklist" x-data="{ anchorInstalled: false, projectCreated: false, testsPass: false }">
+                <div class="checklist-item" :class="{ checked: anchorInstalled }">
+                    <input type="checkbox" id="anchor-check" x-model="anchorInstalled">
+                    <label for="anchor-check">
+                        <strong>Anchor installed</strong> - Run <code>anchor --version</code>
+                    </label>
+                </div>
+                <div class="checklist-item" :class="{ checked: projectCreated }">
+                    <input type="checkbox" id="project-check" x-model="projectCreated">
+                    <label for="project-check">
+                        <strong>Project created</strong> - Run <code>anchor init my_first_program</code>
+                    </label>
+                </div>
+                <div class="checklist-item" :class="{ checked: testsPass }">
+                    <input type="checkbox" id="tests-check" x-model="testsPass">
+                    <label for="tests-check">
+                        <strong>Tests passing</strong> - Run <code>anchor test</code>
+                    </label>
+                </div>
+            </div>
+
+            <h2>Step 4: Install Node.js (for testing)</h2>
+
+            <p>
+                Anchor tests are written in TypeScript/JavaScript. You'll need Node.js.
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Install Node.js</span>
+                    <button onclick="copyCode(this)" class="copy-btn">Copy</button>
+                </div>
+                <pre><code><span class="code-comment"># Using nvm (recommended)</span>
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+<span class="code-comment"># Restart terminal, then install Node</span>
+nvm install 20
+nvm use 20
+
+<span class="code-comment"># Verify</span>
+node --version  <span class="code-comment"># v20.x.x</span>
+npm --version   <span class="code-comment"># 10.x.x</span></code></pre>
+            </div>
+
+            <h2>VS Code Extensions</h2>
+
+            <p>
+                These extensions make Solana development smoother:
+            </p>
+
+            <div class="space-y-3 my-6">
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center font-bold text-sm">RA</div>
+                    <div>
+                        <h4 class="font-semibold m-0">rust-analyzer</h4>
+                        <p class="text-sm text-gray-600 m-0">Essential for Rust. Provides autocomplete, errors, and go-to-definition.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <div class="w-10 h-10 bg-solana-purple rounded-lg flex items-center justify-center font-bold text-sm">A</div>
+                    <div>
+                        <h4 class="font-semibold m-0">Anchor (by Anchor Labs)</h4>
+                        <p class="text-sm text-gray-600 m-0">Syntax highlighting for Anchor-specific macros.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center font-bold text-sm">ES</div>
+                    <div>
+                        <h4 class="font-semibold m-0">ESLint + Prettier</h4>
+                        <p class="text-sm text-gray-600 m-0">For TypeScript test files.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Common Issues & Solutions</h2>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-red-900/20 rounded-xl p-5 border border-red-500/30">
+                    <h4 class="text-red-400 mt-0 mb-2">Error: "solana-test-validator: command not found"</h4>
+                    <p class="text-sm text-gray-700 m-0">
+                        Make sure Solana CLI is in your PATH. Add this to your <code>~/.bashrc</code> or <code>~/.zshrc</code>:
+                        <code class="block mt-2 text-xs">export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"</code>
+                    </p>
+                </div>
+
+                <div class="bg-red-900/20 rounded-xl p-5 border border-red-500/30">
+                    <h4 class="text-red-400 mt-0 mb-2">Error: "BPF SDK not found"</h4>
+                    <p class="text-sm text-gray-700 m-0">
+                        Run <code>solana-install update</code> to update your Solana installation and download the BPF SDK.
+                    </p>
+                </div>
+
+                <div class="bg-red-900/20 rounded-xl p-5 border border-red-500/30">
+                    <h4 class="text-red-400 mt-0 mb-2">Error: "Airdrop failed"</h4>
+                    <p class="text-sm text-gray-700 m-0">
+                        Devnet faucet has rate limits. Wait a moment and try again, or use <a href="https://faucet.solana.com" target="_blank" class="text-solana-green hover:underline">faucet.solana.com</a>.
+                    </p>
+                </div>
+            </div>
+
+            <h2>Quick Reference</h2>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Useful Commands</span>
+                </div>
+                <pre><code><span class="code-comment"># Check configuration</span>
+solana config get
+
+<span class="code-comment"># Switch networks</span>
+solana config set --url mainnet-beta
+solana config set --url devnet
+solana config set --url localhost
+
+<span class="code-comment"># Start local validator</span>
+solana-test-validator
+
+<span class="code-comment"># View logs</span>
+solana logs
+
+<span class="code-comment"># Deploy program</span>
+anchor deploy
+
+<span class="code-comment"># Run tests with logs</span>
+anchor test -- --features debug</code></pre>
+            </div>
+
+            <h2>Summary</h2>
+
+            <ul>
+                <li>Install Rust with rustup</li>
+                <li>Install Solana CLI and configure for devnet</li>
+                <li>Install Anchor framework with AVM</li>
+                <li>Install Node.js for testing</li>
+                <li>Add VS Code extensions for better DX</li>
+            </ul>
+
+            <!-- Quiz Section -->
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container"></div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Copy code function
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                setTimeout(() => button.textContent = 'Copy', 2000);
+            });
+        }
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'environment-setup',
+            questions: [
+                {
+                    question: "What language are Solana programs written in?",
+                    options: [
+                        "JavaScript",
+                        "Python",
+                        "Rust",
+                        "Solidity"
+                    ],
+                    correct: 2,
+                    explanation: "Solana programs are written in Rust. While the Anchor framework adds helpful macros on top, the underlying language is Rust, which compiles to BPF bytecode."
+                },
+                {
+                    question: "What is Anchor?",
+                    options: [
+                        "A cryptocurrency",
+                        "A framework for Solana development",
+                        "A type of wallet",
+                        "A consensus mechanism"
+                    ],
+                    correct: 1,
+                    explanation: "Anchor is the most popular framework for Solana development. It provides simplified program structure, automatic account validation, and TypeScript client generation."
+                },
+                {
+                    question: "Which command gets you free SOL for testing on devnet?",
+                    options: [
+                        "solana get-money",
+                        "solana airdrop 2",
+                        "solana free-sol",
+                        "solana faucet"
+                    ],
+                    correct: 1,
+                    explanation: "The 'solana airdrop' command requests free SOL from the devnet faucet. You can request up to 2 SOL at a time for testing purposes."
+                },
+                {
+                    question: "Where is your default Solana keypair stored?",
+                    options: [
+                        "/etc/solana/wallet.json",
+                        "~/.config/solana/id.json",
+                        "~/solana/keypair.json",
+                        "In the browser"
+                    ],
+                    correct: 1,
+                    explanation: "The default keypair is stored at ~/.config/solana/id.json. This location is used automatically by Solana CLI commands unless you specify a different keypair."
+                }
+            ]
+        };
+
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

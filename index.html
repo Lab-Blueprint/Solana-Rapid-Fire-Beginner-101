@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Rapid-Fire Beginner 101</title>
+    <meta name="description" content="Learn Solana fundamentals through interactive lessons, animated diagrams, and hands-on coding exercises.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen" x-data="{ mobileMenuOpen: false }">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#part1" class="text-gray-700 hover:text-solana-green transition-colors">Part 1: Core Concepts</a>
+                    <a href="#part2" class="text-gray-700 hover:text-solana-green transition-colors">Part 2: Start Coding</a>
+                    <a href="part1/module-1-blockchain-computer.html" class="px-4 py-2 bg-gradient-to-r from-solana-purple to-solana-green rounded-lg font-semibold hover:opacity-90 transition-opacity">
+                        Start Learning
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path x-show="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" x-transition class="md:hidden bg-[#EBF4F6] border-t border-[#7AB2B2]">
+            <div class="px-4 py-4 space-y-3">
+                <a href="#part1" class="block text-gray-700 hover:text-solana-green">Part 1: Core Concepts</a>
+                <a href="#part2" class="block text-gray-700 hover:text-solana-green">Part 2: Start Coding</a>
+                <a href="part1/module-1-blockchain-computer.html" class="block px-4 py-2 bg-gradient-to-r from-solana-purple to-solana-green rounded-lg font-semibold text-center">
+                    Start Learning
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                <span class="bg-gradient-to-r from-solana-purple to-solana-green bg-clip-text text-transparent">
+                    Solana Rapid-Fire
+                </span>
+                <br>Beginner 101
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Master Solana fundamentals through interactive lessons, animated diagrams, quizzes, and hands-on coding exercises.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="part1/module-1-blockchain-computer.html" class="px-8 py-4 bg-gradient-to-r from-solana-purple to-solana-green rounded-xl font-bold text-lg hover:opacity-90 transition-opacity">
+                    Start Learning
+                </a>
+                <a href="#course-overview" class="px-8 py-4 border border-gray-600 rounded-xl font-semibold text-lg hover:border-solana-green transition-colors">
+                    View Curriculum
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-16 px-4 border-t border-[#7AB2B2]">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl p-6 border border-[#7AB2B2]">
+                    <div class="w-12 h-12 bg-solana-purple/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Animated Diagrams</h3>
+                    <p class="text-gray-600">Visual explanations with interactive GSAP animations that bring complex concepts to life.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-[#7AB2B2]">
+                    <div class="w-12 h-12 bg-solana-green/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Interactive Quizzes</h3>
+                    <p class="text-gray-600">Test your knowledge with instant feedback and detailed explanations for each answer.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border border-[#7AB2B2]">
+                    <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Code Playgrounds</h3>
+                    <p class="text-gray-600">Write and deploy real Solana programs with embedded Solana Playground editors.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Overview -->
+    <section id="course-overview" class="py-16 px-4 border-t border-[#7AB2B2]">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">Course Curriculum</h2>
+
+            <!-- Progress Bar -->
+            <div x-data="progressTracker()" class="mb-12">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>Your Progress</span>
+                    <span x-text="progressText"></span>
+                </div>
+                <div class="h-3 bg-[#EBF4F6] rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-solana-purple to-solana-green rounded-full transition-all duration-500"
+                         :style="'width: ' + progressPercent + '%'"></div>
+                </div>
+            </div>
+
+            <!-- Part 1 -->
+            <div id="part1" class="mb-12">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 bg-solana-purple/20 text-solana-purple rounded-full text-sm font-semibold">Part 1</span>
+                    <h3 class="text-2xl font-bold">Core Concepts</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <a href="part1/module-1-blockchain-computer.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-purple transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">1.1</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">Blockchain as a Computer</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Decentralized computing, client-server vs P2P networks</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="part1/module-2-identity-authentication.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-purple transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">1.2</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">Identity &amp; Authentication</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Keypairs, signing, and RPC gateways</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="part1/module-3-consensus-input.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-purple transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">1.3</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">Consensus (Input, Not Memory)</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Ordering inputs, node roles, decentralization risks</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Part 2 -->
+            <div id="part2">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 bg-solana-green/20 text-solana-green rounded-full text-sm font-semibold">Part 2</span>
+                    <h3 class="text-2xl font-bold">Start Coding</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <a href="part2/module-4-account-file.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-green transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">2.1</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">Account = File</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Account structure, ownership rules, rent basics</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="part2/module-5-program-library.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-green transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">2.2</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">Program = Library</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Stateless programs, PDAs, and common use cases</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="part2/module-6-environment-setup-minimal.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-green transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">2.3</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">Environment Setup (Minimal)</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Fast path and minimal local setup</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="part2/module-7-coding-with-claude.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-green transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">2.4</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">Coding with Claude</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Prompting, scaffolding, and testing a simple dApp</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 border-t border-[#7AB2B2]">
+        <div class="max-w-4xl mx-auto text-center text-gray-500">
+            <p class="mb-4">Built for the Solana community</p>
+            <div class="flex justify-center gap-6">
+                <a href="https://solana.com" target="_blank" class="hover:text-solana-green transition-colors">Solana</a>
+                <a href="https://docs.solana.com" target="_blank" class="hover:text-solana-green transition-colors">Docs</a>
+                <a href="https://beta.solpg.io" target="_blank" class="hover:text-solana-green transition-colors">Playground</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/navigation.js"></script>
+
+    <script>
+        function progressTracker() {
+            return {
+                completed: 0,
+                total: 7,
+                get progressPercent() {
+                    const progress = JSON.parse(localStorage.getItem('solana101-progress') || '{}');
+                    this.completed = Object.values(progress).filter(v => v).length;
+                    return Math.round((this.completed / this.total) * 100);
+                },
+                get progressText() {
+                    return `${this.completed}/${this.total} lessons completed`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

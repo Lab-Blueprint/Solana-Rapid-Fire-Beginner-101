@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account = File - Solana 101</title>
+    <meta name="description" content="Understand Solana accounts as files that store data and lamports.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 2</span>
+                <span>/</span>
+                <span class="text-solana-purple">Account = File</span>
+            </div>
+
+            <h1>Account = File</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                On Solana, everything is an account. Think of accounts like files that store data and balance.
+            </p>
+
+            <div class="slide-deck">
+                <div class="slide-header">
+                    <div class="slide-counter" data-slide-counter></div>
+                </div>
+
+                <div class="slide active">
+                    <div class="slide-card my-8">
+                        <div class="slide-kicker">Slide 1</div>
+                        <div class="slide-title">Accounts are files</div>
+                        <div class="slide-subtitle">They store data and lamports; programs read and write them.</div>
+                    </div>
+
+                    <h2>Learning Objective</h2>
+                    <ul>
+                        <li>Identify account fields: lamports, data, owner, executable</li>
+                        <li>Explain the ownership rule for writing data</li>
+                        <li>Understand rent and rent-exempt accounts</li>
+                    </ul>
+
+                    <h2>What to Expect</h2>
+                    <ul>
+                        <li>Account structure overview</li>
+                        <li>Why code and data are separated</li>
+                        <li>Interactive account model diagram</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>Account Structure (Interactive)</h2>
+                    <div class="animation-container my-8">
+                        <div id="account-model-animation" class="p-6" style="height: 360px;"></div>
+                        <div class="animation-controls">
+                            <button onclick="accountAnimation.play()">Play</button>
+                            <button onclick="accountAnimation.pause()">Pause</button>
+                            <button onclick="accountAnimation.reset()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Ownership Rules</h2>
+                    <ul>
+                        <li><strong>Only the owner program can modify data</strong></li>
+                        <li>Anyone can read account data</li>
+                        <li>Anyone can transfer lamports into an account</li>
+                    </ul>
+
+                    <h2>Rent Basics</h2>
+                    <p>
+                        Accounts must maintain a minimum balance to remain alive. When an account holds ~2 years of rent,
+                        it becomes <strong>rent-exempt</strong> and won't be reclaimed.
+                    </p>
+                </div>
+
+                <div class="slide">
+                    <h2>Checkpoint Quiz</h2>
+                    <div id="quiz-container"></div>
+                </div>
+
+                <div class="slide-nav">
+                    <button data-slide-prev>Previous</button>
+                    <div class="slide-dots" data-slide-dots></div>
+                    <button data-slide-next>Next</button>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/slides.js"></script>
+    <script src="../js/animations/account-model.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'module-4-account-file',
+            questions: [
+                {
+                    question: "Who can modify account data on Solana?",
+                    options: [
+                        "Any validator",
+                        "Only the owner program",
+                        "Any wallet",
+                        "Only RPC nodes"
+                    ],
+                    correct: 1,
+                    explanation: "Only the owner program can write data."
+                },
+                {
+                    question: "An account stores:",
+                    options: [
+                        "Only code",
+                        "Data and lamports",
+                        "Passwords",
+                        "Consensus rules"
+                    ],
+                    correct: 1,
+                    explanation: "Accounts hold data and balance."
+                },
+                {
+                    question: "What does rent-exempt mean?",
+                    options: [
+                        "Free to create",
+                        "Holds enough lamports to stay alive",
+                        "Only stores SOL",
+                        "Hidden from the network"
+                    ],
+                    correct: 1,
+                    explanation: "Rent-exempt accounts won't be reclaimed."
+                },
+                {
+                    question: "Which field indicates if an account contains program code?",
+                    options: [
+                        "owner",
+                        "executable",
+                        "lamports",
+                        "data"
+                    ],
+                    correct: 1,
+                    explanation: "Executable tells if it's a program account."
+                },
+                {
+                    question: "Anyone can read account data?",
+                    options: [
+                        "Yes",
+                        "No",
+                        "Only validators can",
+                        "Only RPC nodes can"
+                    ],
+                    correct: 0,
+                    explanation: "Account data is publicly readable."
+                },
+                {
+                    question: "Anyone can transfer lamports into an account?",
+                    options: [
+                        "Yes",
+                        "No",
+                        "Only the owner program can",
+                        "Only the System Program can"
+                    ],
+                    correct: 0,
+                    explanation: "Any program can credit lamports."
+                },
+                {
+                    question: "Why separate programs and accounts?",
+                    options: [
+                        "To slow down execution",
+                        "To allow stateless code and parallelism",
+                        "To avoid using Rust",
+                        "To prevent PDAs"
+                    ],
+                    correct: 1,
+                    explanation: "Separation enables parallelism."
+                },
+                {
+                    question: "The owner field represents:",
+                    options: [
+                        "The wallet with most SOL",
+                        "The program allowed to modify data",
+                        "The RPC provider",
+                        "The validator leader"
+                    ],
+                    correct: 1,
+                    explanation: "Only the owner program can mutate data."
+                },
+                {
+                    question: "Accounts are best compared to:",
+                    options: [
+                        "Files",
+                        "Emails",
+                        "Passwords",
+                        "Blocks"
+                    ],
+                    correct: 0,
+                    explanation: "Accounts store data like files."
+                },
+                {
+                    question: "Rent exists to:",
+                    options: [
+                        "Reward miners only",
+                        "Prevent storage spam",
+                        "Remove programs",
+                        "Encrypt transactions"
+                    ],
+                    correct: 1,
+                    explanation: "Rent discourages unused storage."
+                }
+            ]
+        };
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

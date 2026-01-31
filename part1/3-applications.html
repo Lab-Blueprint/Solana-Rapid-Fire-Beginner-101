@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications - Solana 101</title>
+    <meta name="description" content="Explore real-world blockchain applications: DeFi, NFTs, DAOs, and how they solve coordination problems.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 1</span>
+                <span>/</span>
+                <span class="text-solana-purple">Applications</span>
+            </div>
+
+            <h1>Blockchain Applications</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Understanding the problems blockchain solves and the applications it enables.
+            </p>
+
+            <h2>Collaboration vs Cooperation Problems</h2>
+
+            <p>
+                To understand when blockchain is useful, we need to distinguish between two types of coordination:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6 my-6">
+                <div class="bg-blue-900/20 rounded-xl p-6 border border-blue-500/30">
+                    <h3 class="text-blue-400 mt-0 mb-3">Collaboration</h3>
+                    <p class="text-sm text-gray-700 mb-3">People working together toward a <strong>shared goal</strong>. Trust is usually not an issue.</p>
+                    <ul class="text-sm text-gray-600 m-0">
+                        <li>Team building a product</li>
+                        <li>Friends planning a trip</li>
+                        <li>Company departments coordinating</li>
+                    </ul>
+                    <div class="mt-4 pt-4 border-t border-blue-500/20">
+                        <span class="text-xs text-blue-400">Blockchain: Usually not needed</span>
+                    </div>
+                </div>
+
+                <div class="bg-solana-purple/20 rounded-xl p-6 border border-solana-purple/30">
+                    <h3 class="text-solana-purple mt-0 mb-3">Cooperation</h3>
+                    <p class="text-sm text-gray-700 mb-3">Parties with <strong>different goals</strong> who need to transact. Trust is a real issue.</p>
+                    <ul class="text-sm text-gray-600 m-0">
+                        <li>Buying from a stranger online</li>
+                        <li>Lending money to unknown borrowers</li>
+                        <li>Verifying credentials without revealing data</li>
+                    </ul>
+                    <div class="mt-4 pt-4 border-t border-solana-purple/20">
+                        <span class="text-xs text-solana-green">Blockchain: Very useful!</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Key Insight
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Blockchain shines in cooperation problems where parties don't trust each other but need to transact. It replaces the need for intermediaries (banks, lawyers, escrow services) with cryptographic guarantees.
+                </p>
+            </div>
+
+            <h2>DeFi: Decentralized Finance</h2>
+
+            <p>
+                DeFi recreates financial services without intermediaries. On Solana, DeFi apps process millions of transactions daily with near-instant settlement.
+            </p>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-solana-purple/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Decentralized Exchanges (DEXs)</h4>
+                            <p class="text-sm text-gray-600 m-0">Trade tokens directly from your wallet without a company holding your funds. Examples: Jupiter, Raydium, Orca.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-solana-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Lending Protocols</h4>
+                            <p class="text-sm text-gray-600 m-0">Lend your crypto to earn interest or borrow against your holdings. Smart contracts enforce repayment. Examples: Marginfi, Kamino.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold m-0 mb-1">Liquid Staking</h4>
+                            <p class="text-sm text-gray-600 m-0">Stake SOL to secure the network while receiving liquid tokens you can use in other DeFi apps. Examples: Marinade, Jito.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>NFTs: Digital Ownership</h2>
+
+            <p>
+                NFTs (Non-Fungible Tokens) are unique digital assets that prove ownership on the blockchain. Unlike fungible tokens where each unit is identical, each NFT is distinct.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-purple mt-0 mb-2">Digital Art & Collectibles</h4>
+                    <p class="text-sm text-gray-600 m-0">Artists can sell directly to collectors with built-in royalties on secondary sales. Provenance is permanently recorded.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-green mt-0 mb-2">Gaming Assets</h4>
+                    <p class="text-sm text-gray-600 m-0">Players truly own in-game items and can trade them freely. Assets can even move between games.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-purple-400 mt-0 mb-2">Membership & Access</h4>
+                    <p class="text-sm text-gray-600 m-0">NFTs can represent membership in communities, access to events, or software licenses.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-blue-400 mt-0 mb-2">Real-World Assets</h4>
+                    <p class="text-sm text-gray-600 m-0">Physical items like real estate, art, or luxury goods can be tokenized for easier trading and fractional ownership.</p>
+                </div>
+            </div>
+
+            <div class="info-box tip">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Solana NFT Standard
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Solana uses the Metaplex standard for NFTs. Compressed NFTs (cNFTs) can reduce minting costs by 99.9%, enabling collections of millions of items at minimal cost.
+                </p>
+            </div>
+
+            <h2>DAOs: Decentralized Organizations</h2>
+
+            <p>
+                DAOs (Decentralized Autonomous Organizations) are internet-native organizations governed by smart contracts and token voting. They enable global coordination without traditional corporate structure.
+            </p>
+
+            <p>
+                Key properties of DAOs:
+            </p>
+
+            <ul>
+                <li><strong>Transparent</strong> - All rules and treasury movements are on-chain</li>
+                <li><strong>Permissionless</strong> - Anyone can participate by acquiring governance tokens</li>
+                <li><strong>Global</strong> - No geographic restrictions on membership</li>
+                <li><strong>Programmable</strong> - Rules enforced by code, not lawyers</li>
+            </ul>
+
+            <h2>Payments & Commerce</h2>
+
+            <p>
+                Solana's speed and low costs make it ideal for payments:
+            </p>
+
+            <div class="bg-gradient-to-br from-solana-purple/10 to-solana-green/10 rounded-xl p-6 border border-[#7AB2B2] my-6">
+                <h3 class="mt-0 mb-4">Solana Pay</h3>
+                <p class="text-gray-700 mb-4">
+                    A payment protocol that enables instant, free transfers between wallets. Merchants can accept USDC (a dollar-pegged stablecoin) with the same speed as credit cards but without the 2-3% fees.
+                </p>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-solana-purple">Instant</div>
+                        <div class="text-xs text-gray-600">Settlement</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-solana-green">0%</div>
+                        <div class="text-xs text-gray-600">Card fees</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-purple-400">Global</div>
+                        <div class="text-xs text-gray-600">Reach</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Other Applications</h2>
+
+            <div class="space-y-4 my-6">
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <h4 class="font-semibold m-0 text-solana-purple">Decentralized Social</h4>
+                    <p class="text-sm text-gray-600 m-0">Users own their social graph and content. No platform can ban or censor. Examples: Dialect, Gum.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <h4 class="font-semibold m-0 text-solana-green">Oracle Networks</h4>
+                    <p class="text-sm text-gray-600 m-0">Bring real-world data (prices, weather, sports scores) on-chain securely. Examples: Pyth, Switchboard.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <h4 class="font-semibold m-0 text-purple-400">Decentralized Compute</h4>
+                    <p class="text-sm text-gray-600 m-0">Distributed networks for AI inference, rendering, and other compute tasks. Examples: Render, io.net.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2]">
+                    <h4 class="font-semibold m-0 text-blue-400">Physical Infrastructure (DePIN)</h4>
+                    <p class="text-sm text-gray-600 m-0">Incentivize building real-world infrastructure like wireless networks and sensors. Examples: Helium, Hivemapper.</p>
+                </div>
+            </div>
+
+            <h2>When NOT to Use Blockchain</h2>
+
+            <p>
+                Blockchain isn't the answer to everything. It's probably not needed when:
+            </p>
+
+            <ul>
+                <li>All parties already trust each other</li>
+                <li>A centralized solution is more efficient and trust isn't an issue</li>
+                <li>Data needs to be private and never publicly verifiable</li>
+                <li>The application requires changing historical data</li>
+                <li>Speed matters more than decentralization (though Solana blurs this line!)</li>
+            </ul>
+
+            <h2>Summary</h2>
+
+            <ul>
+                <li>Blockchain solves cooperation problems where trust is needed</li>
+                <li>DeFi enables financial services without intermediaries</li>
+                <li>NFTs prove digital ownership and enable new creative economies</li>
+                <li>DAOs allow global coordination with transparent governance</li>
+                <li>Solana's speed enables payments that rival traditional systems</li>
+            </ul>
+
+            <!-- Quiz Section -->
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container"></div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'applications',
+            questions: [
+                {
+                    question: "When is blockchain most useful?",
+                    options: [
+                        "When a team is collaborating on a shared goal",
+                        "When parties with different goals need to transact without trust",
+                        "When you need to store private data",
+                        "When speed is more important than anything else"
+                    ],
+                    correct: 1,
+                    explanation: "Blockchain shines in cooperation problems where parties don't trust each other but need to transact. It replaces intermediaries (banks, escrow services) with cryptographic guarantees."
+                },
+                {
+                    question: "What is the main benefit of using a DEX instead of a centralized exchange?",
+                    options: [
+                        "It's always faster",
+                        "You maintain custody of your funds",
+                        "There are no transaction fees",
+                        "It has better customer support"
+                    ],
+                    correct: 1,
+                    explanation: "With a DEX (Decentralized Exchange), you trade directly from your wallet. No company ever holds your funds, eliminating counterparty risk and the possibility of exchange hacks affecting your assets."
+                },
+                {
+                    question: "What makes NFTs different from regular tokens like SOL?",
+                    options: [
+                        "NFTs are more valuable",
+                        "NFTs can be used for payments",
+                        "Each NFT is unique and non-interchangeable",
+                        "NFTs don't exist on the blockchain"
+                    ],
+                    correct: 2,
+                    explanation: "NFTs (Non-Fungible Tokens) are unique - each one is distinct and not interchangeable with others. Regular tokens like SOL are fungible - one SOL is identical to any other SOL."
+                },
+                {
+                    question: "What is Solana Pay's main advantage over credit cards for merchants?",
+                    options: [
+                        "It's slower but more secure",
+                        "It has 5% transaction fees",
+                        "Instant settlement with near-zero fees",
+                        "It only works in the US"
+                    ],
+                    correct: 2,
+                    explanation: "Solana Pay offers instant settlement with fees around $0.00025 per transaction, compared to credit cards which charge 2-3% fees and take days to settle. Merchants keep more of each sale."
+                }
+            ]
+        };
+
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

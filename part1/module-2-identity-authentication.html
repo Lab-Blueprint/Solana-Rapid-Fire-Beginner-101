@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity & Authentication - Solana 101</title>
+    <meta name="description" content="Learn how keys and signatures replace passwords on Solana.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 1</span>
+                <span>/</span>
+                <span class="text-solana-purple">Identity & Authentication</span>
+            </div>
+
+            <h1>Identity & Authentication</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                On Solana, your identity is a keypair. You prove ownership by signing, not by logging in.
+            </p>
+
+            <div class="slide-deck">
+                <div class="slide-header">
+                    <div class="slide-counter" data-slide-counter></div>
+                </div>
+
+                <div class="slide active">
+                    <div class="slide-card my-8">
+                        <div class="slide-kicker">Slide 1</div>
+                        <div class="slide-title">Sign, do not log in</div>
+                        <div class="slide-subtitle">Your private key signs, your public key verifies. That is your identity.</div>
+                    </div>
+
+                    <h2>Learning Objective</h2>
+                    <ul>
+                        <li>Explain how keypairs replace passwords</li>
+                        <li>Describe what a signature proves</li>
+                        <li>Understand the role of RPC nodes in authentication flow</li>
+                    </ul>
+
+                    <h2>What to Expect</h2>
+                    <ul>
+                        <li>Keypair basics: private key signs, public key verifies</li>
+                        <li>Why key generation happens off-chain</li>
+                        <li>An animation of the signing and submission flow</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>Passwords vs Signatures</h2>
+                    <p>
+                        Traditional systems store your password (or a hash). Blockchains can't do that because every validator shares data.
+                        Instead, your private key signs a message and anyone can verify the signature with your public key.
+                    </p>
+
+                    <div class="info-box note">
+                        <div class="info-box-title">
+                            <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Key Insight
+                        </div>
+                        <p class="text-gray-700 text-sm m-0">
+                            You can prove identity without revealing your secret. That's why blockchain authentication is censorship resistant.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Signing Flow (Interactive)</h2>
+                    <p>
+                        Watch how a transaction is created, signed, submitted, and confirmed. The "Sign" step is the authentication moment.
+                    </p>
+
+                    <div class="animation-container my-8">
+                        <div id="tx-lifecycle-animation" class="p-6" style="height: 360px;"></div>
+                        <div class="animation-controls">
+                            <button onclick="txLifecycleAnimation.play()">Play</button>
+                            <button onclick="txLifecycleAnimation.pause()">Pause</button>
+                            <button onclick="txLifecycleAnimation.reset()">Reset</button>
+                            <button onclick="txLifecycleAnimation.step()" class="ml-auto">Step</button>
+                        </div>
+                    </div>
+
+                    <h2>Off-Chain Key Generation</h2>
+                    <p>
+                        Keypairs are generated locally on your machine, not on-chain. The blockchain only sees signatures and public keys.
+                    </p>
+                </div>
+
+                <div class="slide">
+                    <h2>Checkpoint Quiz</h2>
+                    <div id="quiz-container"></div>
+                </div>
+
+                <div class="slide-nav">
+                    <button data-slide-prev>Previous</button>
+                    <div class="slide-dots" data-slide-dots></div>
+                    <button data-slide-next>Next</button>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/slides.js"></script>
+    <script src="../js/animations/transaction-flow.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'module-2-identity-auth',
+            questions: [
+                {
+                    question: "What does a signature prove on Solana?",
+                    options: [
+                        "That the transaction was mined",
+                        "That the signer controls the private key",
+                        "That the network is centralized",
+                        "That the token is an NFT"
+                    ],
+                    correct: 1,
+                    explanation: "A valid signature proves control of the private key."
+                },
+                {
+                    question: "Which key verifies a signature?",
+                    options: [
+                        "Private key",
+                        "Public key",
+                        "RPC endpoint",
+                        "Program ID"
+                    ],
+                    correct: 1,
+                    explanation: "Public keys verify signatures."
+                },
+                {
+                    question: "Why is key generation off-chain?",
+                    options: [
+                        "Because validators are offline",
+                        "Because secrets should never be broadcast",
+                        "Because blockchains can't use cryptography",
+                        "Because wallets are centralized"
+                    ],
+                    correct: 1,
+                    explanation: "Private keys must stay secret."
+                },
+                {
+                    question: "What replaces \"login\" on Solana?",
+                    options: [
+                        "Email verification",
+                        "Password reset",
+                        "Transaction signing",
+                        "Captcha"
+                    ],
+                    correct: 2,
+                    explanation: "Signing proves ownership without passwords."
+                },
+                {
+                    question: "What is stored in a wallet?",
+                    options: [
+                        "Your private key",
+                        "Validator passwords",
+                        "Network consensus",
+                        "Program bytecode"
+                    ],
+                    correct: 0,
+                    explanation: "Wallets hold private keys and account info."
+                },
+                {
+                    question: "RPC nodes are best described as:",
+                    options: [
+                        "Wallets",
+                        "Gateways for clients to the network",
+                        "Consensus leaders",
+                        "Token mints"
+                    ],
+                    correct: 1,
+                    explanation: "RPC nodes provide read/write access."
+                },
+                {
+                    question: "What happens if someone gets your private key?",
+                    options: [
+                        "They can only read data",
+                        "They can control your funds",
+                        "Nothing changes",
+                        "They can only use devnet"
+                    ],
+                    correct: 1,
+                    explanation: "Private key control equals account control."
+                },
+                {
+                    question: "Which step is the authentication moment?",
+                    options: [
+                        "Create",
+                        "Sign",
+                        "Submit",
+                        "Confirm"
+                    ],
+                    correct: 1,
+                    explanation: "Signing proves authorization."
+                },
+                {
+                    question: "Why can't validators store user passwords?",
+                    options: [
+                        "They have no storage",
+                        "Everyone can be a validator",
+                        "Passwords are too long",
+                        "Validators are offline"
+                    ],
+                    correct: 1,
+                    explanation: "Public chains share data; secrets must stay local."
+                },
+                {
+                    question: "A public key is:",
+                    options: [
+                        "A secret you never share",
+                        "Safe to share and used for verification",
+                        "Stored only by validators",
+                        "Generated on-chain"
+                    ],
+                    correct: 1,
+                    explanation: "Public keys are shared to verify signatures."
+                }
+            ]
+        };
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

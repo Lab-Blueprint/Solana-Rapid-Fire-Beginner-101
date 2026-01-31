@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program = Library - Solana 101</title>
+    <meta name="description" content="Understand Solana programs as stateless libraries and how PDAs work.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 2</span>
+                <span>/</span>
+                <span class="text-solana-purple">Program = Library</span>
+            </div>
+
+            <h1>Program = Library</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Programs are shared, stateless libraries. Accounts hold the data they operate on.
+            </p>
+
+            <div class="slide-deck">
+                <div class="slide-header">
+                    <div class="slide-counter" data-slide-counter></div>
+                </div>
+
+                <div class="slide active">
+                    <div class="slide-card my-8">
+                        <div class="slide-kicker">Slide 1</div>
+                        <div class="slide-title">Programs are shared libraries</div>
+                        <div class="slide-subtitle">Code is stateless; accounts hold all persistent state.</div>
+                    </div>
+
+                    <h2>Learning Objective</h2>
+                    <ul>
+                        <li>Describe programs as stateless code reused by all users</li>
+                        <li>Explain why state lives in accounts</li>
+                        <li>Understand PDAs as program-owned addresses</li>
+                    </ul>
+
+                    <h2>What to Expect</h2>
+                    <ul>
+                        <li>Why programs are "shared libraries"</li>
+                        <li>PDA concepts and common use cases</li>
+                        <li>Interactive PDA derivation animation</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>Programs Are Stateless</h2>
+                    <p>
+                        A program is code that runs the same for everyone. It does not store user data itself. Instead, it reads and writes
+                        to accounts provided in a transaction.
+                    </p>
+                </div>
+
+                <div class="slide">
+                    <h2>PDA Derivation (Interactive)</h2>
+                    <div class="animation-container my-8">
+                        <div id="pda-animation" class="p-6" style="height: 320px;"></div>
+                        <div class="animation-controls">
+                            <button onclick="pdaAnimation.play()">Play</button>
+                            <button onclick="pdaAnimation.pause()">Pause</button>
+                            <button onclick="pdaAnimation.reset()">Reset</button>
+                        </div>
+                    </div>
+
+                    <h2>Typical PDA Use Cases</h2>
+                    <ul>
+                        <li><strong>User data</strong> (profile, stats, settings)</li>
+                        <li><strong>Configuration</strong> (global settings, admin keys)</li>
+                        <li><strong>Escrow</strong> (program-controlled funds)</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>Checkpoint Quiz</h2>
+                    <div id="quiz-container"></div>
+                </div>
+
+                <div class="slide-nav">
+                    <button data-slide-prev>Previous</button>
+                    <div class="slide-dots" data-slide-dots></div>
+                    <button data-slide-next>Next</button>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/slides.js"></script>
+    <script src="../js/animations/account-model.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'module-5-program-library',
+            questions: [
+                {
+                    question: "What does it mean that a program is stateless?",
+                    options: [
+                        "It can't be upgraded",
+                        "It does not store user data internally",
+                        "It runs only once",
+                        "It cannot call other programs"
+                    ],
+                    correct: 1,
+                    explanation: "Programs are code-only; state lives in accounts."
+                },
+                {
+                    question: "Where does program state live?",
+                    options: [
+                        "Inside the program code",
+                        "In accounts",
+                        "In RPC nodes only",
+                        "In wallets only"
+                    ],
+                    correct: 1,
+                    explanation: "Accounts hold all persistent state."
+                },
+                {
+                    question: "Why are PDAs useful?",
+                    options: [
+                        "They allow programs to own accounts",
+                        "They make wallets obsolete",
+                        "They remove the need for signatures",
+                        "They prevent parallel processing"
+                    ],
+                    correct: 0,
+                    explanation: "PDAs are deterministic addresses controlled by programs."
+                },
+                {
+                    question: "Can a PDA be created with a private key?",
+                    options: [
+                        "Yes, like any wallet",
+                        "No, PDAs have no private key",
+                        "Only on devnet",
+                        "Only if using Anchor"
+                    ],
+                    correct: 1,
+                    explanation: "PDAs are derived from seeds + program ID."
+                },
+                {
+                    question: "PDAs are derived from:",
+                    options: [
+                        "A password and email",
+                        "Seeds and program ID",
+                        "Validator votes",
+                        "Token mint supply"
+                    ],
+                    correct: 1,
+                    explanation: "Seeds + program ID define the PDA."
+                },
+                {
+                    question: "If you use the same seeds and program ID you get:",
+                    options: [
+                        "Random addresses",
+                        "The same PDA",
+                        "A wallet address",
+                        "A validator address"
+                    ],
+                    correct: 1,
+                    explanation: "PDAs are deterministic."
+                },
+                {
+                    question: "Which is a common PDA use case?",
+                    options: [
+                        "Global config",
+                        "Email login",
+                        "Mining rewards",
+                        "Password storage"
+                    ],
+                    correct: 0,
+                    explanation: "Config is a classic PDA use case."
+                },
+                {
+                    question: "Programs are like libraries because they are:",
+                    options: [
+                        "Private per user",
+                        "Shared and reused by everyone",
+                        "Stored inside wallets",
+                        "Owned by RPC providers"
+                    ],
+                    correct: 1,
+                    explanation: "The same program serves all users."
+                },
+                {
+                    question: "Who can modify a PDA's data?",
+                    options: [
+                        "Any wallet",
+                        "The owning program",
+                        "Only validators",
+                        "Only RPC nodes"
+                    ],
+                    correct: 1,
+                    explanation: "Ownership rules still apply."
+                },
+                {
+                    question: "A program can sign for a PDA because:",
+                    options: [
+                        "It knows the PDA seeds and bump",
+                        "It has the PDA private key",
+                        "RPC nodes sign for it",
+                        "Validators sign for it"
+                    ],
+                    correct: 0,
+                    explanation: "Programs sign via seeds and bump."
+                }
+            ]
+        };
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interacting with the Network - Solana 101</title>
+    <meta name="description" content="Learn how to interact with Solana: wallets, RPC endpoints, transactions, and signing.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">S</span>
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 1</span>
+                <span>/</span>
+                <span class="text-solana-purple">Interacting with the Network</span>
+            </div>
+
+            <h1>Interacting with the Network</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Learn how wallets, transactions, and RPC endpoints work together to connect you to Solana.
+            </p>
+
+            <h2>The Transaction Lifecycle</h2>
+
+            <p>
+                Every interaction with Solana follows a similar pattern. Let's trace what happens when you send SOL to a friend:
+            </p>
+
+            <!-- Animation Container -->
+            <div class="animation-container my-8">
+                <div id="tx-lifecycle-animation" class="p-8" style="height: 400px;"></div>
+                <div class="animation-controls">
+                    <button onclick="txLifecycleAnimation.play()">Play</button>
+                    <button onclick="txLifecycleAnimation.pause()">Pause</button>
+                    <button onclick="txLifecycleAnimation.reset()">Reset</button>
+                    <button onclick="txLifecycleAnimation.step()" class="ml-auto">Step</button>
+                </div>
+            </div>
+
+            <h2>Wallets: Your Blockchain Identity</h2>
+
+            <p>
+                A wallet is your identity on Solana. It consists of:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-purple mt-0 mb-2">Public Key (Address)</h4>
+                    <p class="text-sm text-gray-600 mb-2">Your public identifier - like an email address. You share this to receive funds.</p>
+                    <code class="text-xs text-solana-green break-all">7C4jsPZpht42Tw6MjXWF56Q5RQUocjBBmciEjDa8HRtp</code>
+                </div>
+
+                <div class="bg-white rounded-xl p-5 border border-[#7AB2B2]">
+                    <h4 class="text-solana-green mt-0 mb-2">Private Key (Secret)</h4>
+                    <p class="text-sm text-gray-600 mb-2">Your secret password - NEVER share this. Used to sign transactions.</p>
+                    <code class="text-xs text-red-400">[Hidden - Never expose your private key!]</code>
+                </div>
+            </div>
+
+            <div class="info-box warning">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    Security Warning
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Anyone with your private key can control your funds. Never share it, never store it in plain text, and never enter it on websites. Use hardware wallets for significant amounts.
+                </p>
+            </div>
+
+            <h3>Popular Solana Wallets</h3>
+
+            <div class="space-y-3 my-4">
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center font-bold">P</div>
+                    <div>
+                        <h4 class="font-semibold m-0">Phantom</h4>
+                        <p class="text-sm text-gray-600 m-0">Most popular Solana wallet. Browser extension and mobile app.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <div class="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center font-bold">S</div>
+                    <div>
+                        <h4 class="font-semibold m-0">Solflare</h4>
+                        <p class="text-sm text-gray-600 m-0">Feature-rich wallet with staking built in. Browser, mobile, and hardware support.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 bg-white rounded-lg p-4 border border-[#7AB2B2]">
+                    <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center font-bold">B</div>
+                    <div>
+                        <h4 class="font-semibold m-0">Backpack</h4>
+                        <p class="text-sm text-gray-600 m-0">Next-gen wallet with xNFT support. Extensible with mini-apps.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>RPC Endpoints: Gateways to Solana</h2>
+
+            <p>
+                RPC (Remote Procedure Call) endpoints are servers that let your wallet and apps communicate with the Solana network. Think of them as the phone lines connecting you to the blockchain.
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Example RPC Endpoints</span>
+                </div>
+                <pre><code><span class="code-comment">// Public endpoints (rate-limited)</span>
+https://api.mainnet-beta.solana.com
+https://api.devnet.solana.com
+
+<span class="code-comment">// Premium RPC providers (recommended for apps)</span>
+https://mainnet.helius-rpc.com/?api-key=YOUR_KEY
+https://solana-mainnet.core.chainstack.com/YOUR_KEY</code></pre>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4 my-6">
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2] text-center">
+                    <h4 class="text-solana-purple mt-0 mb-1">Mainnet</h4>
+                    <p class="text-xs text-gray-600 m-0">Real transactions, real SOL</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2] text-center">
+                    <h4 class="text-solana-green mt-0 mb-1">Devnet</h4>
+                    <p class="text-xs text-gray-600 m-0">Testing with free SOL</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-[#7AB2B2] text-center">
+                    <h4 class="text-purple-400 mt-0 mb-1">Testnet</h4>
+                    <p class="text-xs text-gray-600 m-0">Validator testing</p>
+                </div>
+            </div>
+
+            <h2>Anatomy of a Transaction</h2>
+
+            <p>
+                A Solana transaction contains:
+            </p>
+
+            <div class="bg-white rounded-xl p-6 border border-[#7AB2B2] my-6">
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded flex items-center justify-center text-solana-purple font-mono text-sm flex-shrink-0">1</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Signatures</h4>
+                            <p class="text-sm text-gray-600 m-0">Cryptographic proofs that the transaction was authorized by the relevant private keys.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <span class="w-8 h-8 bg-solana-purple/20 rounded flex items-center justify-center text-solana-purple font-mono text-sm flex-shrink-0">2</span>
+                        <div>
+                            <h4 class="font-semibold m-0">Message</h4>
+                            <p class="text-sm text-gray-600 m-0">Contains the actual instructions and metadata.</p>
+                        </div>
+                    </div>
+
+                    <div class="ml-12 space-y-3 border-l-2 border-gray-700 pl-4">
+                        <div>
+                            <h5 class="font-semibold text-solana-green m-0">Header</h5>
+                            <p class="text-sm text-gray-600 m-0">Counts of signers and read-only accounts</p>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-solana-green m-0">Account Keys</h5>
+                            <p class="text-sm text-gray-600 m-0">All accounts involved in the transaction</p>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-solana-green m-0">Recent Blockhash</h5>
+                            <p class="text-sm text-gray-600 m-0">Prevents replay attacks, expires after ~2 minutes</p>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-solana-green m-0">Instructions</h5>
+                            <p class="text-sm text-gray-600 m-0">The actual operations to perform</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Instructions: The Building Blocks</h2>
+
+            <p>
+                Every transaction contains one or more <strong>instructions</strong>. Each instruction is a call to a program with specific parameters.
+            </p>
+
+            <div class="code-block my-6">
+                <div class="code-block-header">
+                    <span>Example: Transfer SOL Instruction</span>
+                </div>
+                <pre><code>{
+  <span class="code-string">"programId"</span>: <span class="code-string">"11111111111111111111111111111111"</span>, <span class="code-comment">// System Program</span>
+  <span class="code-string">"accounts"</span>: [
+    { <span class="code-string">"pubkey"</span>: <span class="code-string">"FROM_ADDRESS"</span>, <span class="code-string">"isSigner"</span>: <span class="code-keyword">true</span>, <span class="code-string">"isWritable"</span>: <span class="code-keyword">true</span> },
+    { <span class="code-string">"pubkey"</span>: <span class="code-string">"TO_ADDRESS"</span>, <span class="code-string">"isSigner"</span>: <span class="code-keyword">false</span>, <span class="code-string">"isWritable"</span>: <span class="code-keyword">true</span> }
+  ],
+  <span class="code-string">"data"</span>: <span class="code-string">"[TRANSFER_INSTRUCTION + AMOUNT]"</span>
+}</code></pre>
+            </div>
+
+            <div class="info-box note">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Atomic Transactions
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    All instructions in a transaction execute atomically - either they all succeed or they all fail. This enables complex multi-step operations like swaps to be safe from partial execution.
+                </p>
+            </div>
+
+            <h2>Signing: Proving Authorization</h2>
+
+            <p>
+                Before a transaction can be submitted, it must be signed by all required parties. The signing process:
+            </p>
+
+            <ol>
+                <li>Transaction message is serialized to bytes</li>
+                <li>Each signer's private key creates a cryptographic signature</li>
+                <li>Signatures are attached to the transaction</li>
+                <li>Anyone can verify signatures using the public keys</li>
+            </ol>
+
+            <div class="info-box tip">
+                <div class="info-box-title">
+                    <svg class="w-5 h-5 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Try It Yourself
+                </div>
+                <p class="text-gray-700 text-sm m-0">
+                    Install Phantom wallet, switch to Devnet, and get free SOL from a <a href="https://faucet.solana.com" target="_blank" class="text-solana-green hover:underline">Solana Faucet</a>. Try sending SOL to yourself to see the transaction lifecycle in action!
+                </p>
+            </div>
+
+            <h2>Transaction Fees</h2>
+
+            <p>
+                Solana transactions require a small fee (typically 5000 lamports = 0.000005 SOL). Fees serve two purposes:
+            </p>
+
+            <ul>
+                <li><strong>Spam prevention</strong> - Makes it costly to flood the network</li>
+                <li><strong>Validator compensation</strong> - 50% is burned, 50% goes to the block producer</li>
+            </ul>
+
+            <p>
+                Additionally, transactions can include <strong>priority fees</strong> to get processed faster during congestion.
+            </p>
+
+            <h2>Confirmation Levels</h2>
+
+            <p>
+                Solana offers different levels of transaction confirmation:
+            </p>
+
+            <div class="space-y-3 my-6">
+                <div class="bg-yellow-900/20 rounded-lg p-4 border border-yellow-500/30">
+                    <h4 class="text-yellow-400 m-0 mb-1">Processed</h4>
+                    <p class="text-sm text-gray-600 m-0">Transaction seen by a validator. May still be rolled back.</p>
+                </div>
+                <div class="bg-blue-900/20 rounded-lg p-4 border border-blue-500/30">
+                    <h4 class="text-blue-400 m-0 mb-1">Confirmed</h4>
+                    <p class="text-sm text-gray-600 m-0">Received by supermajority (66%+) of stake. Very unlikely to be rolled back.</p>
+                </div>
+                <div class="bg-green-900/20 rounded-lg p-4 border border-green-500/30">
+                    <h4 class="text-green-400 m-0 mb-1">Finalized</h4>
+                    <p class="text-sm text-gray-600 m-0">Block is rooted. Transaction is permanent and cannot be rolled back.</p>
+                </div>
+            </div>
+
+            <h2>Summary</h2>
+
+            <ul>
+                <li>Wallets contain a public key (address) and private key (secret)</li>
+                <li>RPC endpoints connect your app to the Solana network</li>
+                <li>Transactions contain signatures, account keys, and instructions</li>
+                <li>All instructions in a transaction execute atomically</li>
+                <li>Signing proves you authorized the transaction</li>
+                <li>Finalized transactions are permanent and cannot be reversed</li>
+            </ul>
+
+            <!-- Quiz Section -->
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container"></div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/animations/transaction-flow.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'interact-with-network',
+            questions: [
+                {
+                    question: "What should you NEVER share with anyone?",
+                    options: [
+                        "Your public key",
+                        "Your wallet address",
+                        "Your private key",
+                        "Your transaction history"
+                    ],
+                    correct: 2,
+                    explanation: "Your private key is the secret that controls your funds. Anyone with your private key can access and transfer all your assets. Never share it, store it in plain text, or enter it on websites."
+                },
+                {
+                    question: "What is an RPC endpoint?",
+                    options: [
+                        "A type of cryptocurrency",
+                        "A server that connects your app to the Solana network",
+                        "A wallet application",
+                        "A transaction fee"
+                    ],
+                    correct: 1,
+                    explanation: "RPC (Remote Procedure Call) endpoints are servers that let your wallet and applications communicate with the Solana network. They're like the phone lines connecting you to the blockchain."
+                },
+                {
+                    question: "What happens if one instruction in a transaction fails?",
+                    options: [
+                        "The other instructions still execute",
+                        "Only that instruction is skipped",
+                        "The entire transaction fails",
+                        "The transaction is retried automatically"
+                    ],
+                    correct: 2,
+                    explanation: "All instructions in a Solana transaction execute atomically - either they all succeed or they all fail together. This prevents partial execution which could lead to inconsistent states."
+                },
+                {
+                    question: "Which confirmation level means a transaction is permanent?",
+                    options: [
+                        "Processed",
+                        "Confirmed",
+                        "Finalized",
+                        "Pending"
+                    ],
+                    correct: 2,
+                    explanation: "Finalized means the block containing the transaction is rooted - it's permanent and cannot be rolled back. This is the highest level of certainty for transaction completion."
+                }
+            ]
+        };
+
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>
