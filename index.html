@@ -64,6 +64,7 @@
                 <div class="hidden md:flex items-center space-x-6">
                     <a href="#part1" class="text-gray-700 hover:text-solana-green transition-colors">Part 1: Core Concepts</a>
                     <a href="#part2" class="text-gray-700 hover:text-solana-green transition-colors">Part 2: Start Coding</a>
+                    <a href="#part3" class="text-gray-700 hover:text-solana-green transition-colors">Part 3: Hands-on Coding</a>
                     <a href="part1/module-1-blockchain-computer.html" class="px-4 py-2 bg-gradient-to-r from-solana-purple to-solana-green rounded-lg font-semibold hover:opacity-90 transition-opacity">
                         Start Learning
                     </a>
@@ -84,6 +85,7 @@
             <div class="px-4 py-4 space-y-3">
                 <a href="#part1" class="block text-gray-700 hover:text-solana-green">Part 1: Core Concepts</a>
                 <a href="#part2" class="block text-gray-700 hover:text-solana-green">Part 2: Start Coding</a>
+                <a href="#part3" class="block text-gray-700 hover:text-solana-green">Part 3: Hands-on Coding</a>
                 <a href="part1/module-1-blockchain-computer.html" class="block px-4 py-2 bg-gradient-to-r from-solana-purple to-solana-green rounded-lg font-semibold text-center">
                     Start Learning
                 </a>
@@ -293,6 +295,46 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Part 3 -->
+            <div id="part3" class="mb-12">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 bg-solana-green/20 text-solana-green rounded-full text-sm font-semibold">Part 3</span>
+                    <h3 class="text-2xl font-bold">Hands-on Coding Session</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <a href="part3/module-8-paywall-usdc.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-purple transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">3.1</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">Build a USDC Paywall</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Design, build, and test a USDC payment gate</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="part3/module-9-nft-gate-community.html" class="lesson-card block bg-white rounded-xl p-5 border border-[#7AB2B2] hover:border-solana-purple transition-colors group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-gray-500 font-mono text-sm">3.2</span>
+                                    <h4 class="font-semibold group-hover:text-solana-green transition-colors">NFT Gate Community</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm">Mint, verify ownership, and gate access to a community</p>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 group-hover:text-solana-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -338,7 +380,7 @@
         function progressTracker() {
             return {
                 completed: 0,
-                total: 7,
+                total: 9,
                 get progressPercent() {
                     const progress = JSON.parse(localStorage.getItem('solana101-progress') || '{}');
                     this.completed = Object.values(progress).filter(v => v).length;

@@ -12,7 +12,9 @@ const Navigation = {
         { id: 'module-4', path: 'part2/module-4-account-file.html', title: 'Account = File', part: 2 },
         { id: 'module-5', path: 'part2/module-5-program-library.html', title: 'Program = Library', part: 2 },
         { id: 'module-6', path: 'part2/module-6-environment-setup-minimal.html', title: 'Environment Setup (Minimal)', part: 2 },
-        { id: 'module-7', path: 'part2/module-7-coding-with-claude.html', title: 'Coding with Claude', part: 2 }
+        { id: 'module-7', path: 'part2/module-7-coding-with-claude.html', title: 'Coding with Claude', part: 2 },
+        { id: 'module-8', path: 'part3/module-8-paywall-usdc.html', title: 'Build a USDC Paywall', part: 3 },
+        { id: 'module-9', path: 'part3/module-9-nft-gate-community.html', title: 'NFT Gate Community', part: 3 }
     ],
 
     // Storage key
@@ -193,7 +195,8 @@ const Navigation = {
             this.loadProgress();
         }
         const isInSubfolder = window.location.pathname.includes('/part1/') ||
-                            window.location.pathname.includes('/part2/');
+                            window.location.pathname.includes('/part2/') ||
+                            window.location.pathname.includes('/part3/');
         const prefix = isInSubfolder ? '../' : '';
 
         return `
@@ -229,6 +232,18 @@ const Navigation = {
                     `).join('')}
                 </div>
 
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Part 3: Hands-on Coding</div>
+                    ${this.lessons.filter(l => l.part === 3).map(lesson => `
+                        <a href="${prefix}${lesson.path}"
+                           class="sidebar-link ${this.isCompleted(lesson.id) ? 'completed' : ''}"
+                           data-lesson-id="${lesson.id}">
+                            <span class="status-dot"></span>
+                            <span>${lesson.title}</span>
+                        </a>
+                    `).join('')}
+                </div>
+
                 <div class="mt-8 pt-6 border-t border-gray-800">
                     <a href="${prefix}index.html" class="sidebar-link">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +263,8 @@ const Navigation = {
         const prev = this.getPrevLesson();
         const next = this.getNextLesson();
         const isInSubfolder = window.location.pathname.includes('/part1/') ||
-                            window.location.pathname.includes('/part2/');
+                            window.location.pathname.includes('/part2/') ||
+                            window.location.pathname.includes('/part3/');
         const prefix = isInSubfolder ? '../' : '';
 
         let html = '<div class="lesson-nav">';

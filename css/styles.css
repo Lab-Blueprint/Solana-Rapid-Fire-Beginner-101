@@ -178,6 +178,54 @@
     color: #0f172a;
 }
 
+/* Flow steps */
+.flow-step {
+    border: 1px solid rgba(9, 99, 126, 0.2);
+    background: #FFFFFF;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.flow-step-title {
+    font-weight: 600;
+    color: #09637E;
+    font-size: 0.9rem;
+}
+
+.flow-step-text {
+    color: #334155;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.flow-step.active {
+    border-color: #09637E;
+    box-shadow: 0 8px 16px rgba(9, 99, 126, 0.15);
+    background: rgba(9, 99, 126, 0.08);
+}
+
+.flow-step {
+    cursor: pointer;
+}
+
+.paywall-flow-arrows {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.mermaid-diagram {
+    width: 100%;
+    min-height: 320px;
+    padding: 1rem;
+}
+
+.mermaid-diagram .mermaid {
+    width: 100%;
+}
+
 /* Buttons */
 .btn-primary,
 .btn-secondary,

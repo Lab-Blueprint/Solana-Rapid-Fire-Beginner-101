@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Gate Community - Solana 101</title>
+    <meta name="description" content="Hands-on: mint an NFT and gate community access step-by-step.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-white border border-[#7AB2B2] flex items-center justify-center">
+                        <img src="https://solana.com/src/img/branding/solanaLogoMark.svg" alt="Solana" class="w-7 h-7" />
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 3</span>
+                <span>/</span>
+                <span class="text-solana-purple">NFT Gate Community</span>
+            </div>
+
+            <h1>NFT Gate Community</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Build a gated community: mint NFTs and let holders unlock access to a private group.
+            </p>
+
+            <div class="slide-deck">
+
+                <div class="slide active">
+                    <div class="slide-card my-8">
+                        <div class="slide-title">NFT gating from idea to execution</div>
+                        <div class="slide-subtitle">A practical blueprint for artists and businesses.</div>
+                    </div>
+
+                    <h2>Learning Objective</h2>
+                    <ul>
+                        <li>Define an NFT-gated access flow</li>
+                        <li>Design the architecture for mint + verify + gate</li>
+                        <li>Plan phases, tasks, and tradeoffs</li>
+                    </ul>
+
+                    <h2>What to Expect</h2>
+                    <ul>
+                        <li>Problem framing and UX goals</li>
+                        <li>Architecture and access verification</li>
+                        <li>Step-by-step project plan</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>1) Analyze the Problem</h2>
+                    <ul>
+                        <li><strong>Goal:</strong> NFT holders can join a private community.</li>
+                        <li><strong>User story:</strong> mint or buy NFT, then unlock access.</li>
+                        <li><strong>Constraints:</strong> prevent fake wallets, handle resale.</li>
+                        <li><strong>Success:</strong> ownership verified, access granted quickly.</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>2) System Architecture</h2>
+                    <ul>
+                        <li><strong>Client:</strong> wallet connect + NFT ownership check.</li>
+                        <li><strong>On-chain:</strong> NFT mint (SPL + metadata).</li>
+                        <li><strong>Off-chain:</strong> server verifies NFT ownership and issues invite.</li>
+                        <li><strong>Access:</strong> token gate via ownership proof.</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>3) Project Phases (with Testing)</h2>
+                    <ol class="list-decimal ml-6">
+                        <li>Prototype: mint one NFT + basic ownership check.</li>
+                        <li>Integrate: metadata + collection verification.</li>
+                        <li>Verify: confirm NFT owner on-chain.</li>
+                        <li>Gate: generate access token or invite link.</li>
+                        <li>Test: wallet spoofing, resale transfer, and access revocation.</li>
+                    </ol>
+                </div>
+
+                <div class="slide">
+                    <h2>4) Task List</h2>
+                    <ul>
+                        <li>Define NFT collection + metadata.</li>
+                        <li>Mint NFT(s) on devnet.</li>
+                        <li>Build wallet connect UI.</li>
+                        <li>Check ownership via RPC.</li>
+                        <li>Gate access (token + invite).</li>
+                        <li>Monitor and revoke if NFT sold.</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>5) Step-by-Step Execution</h2>
+                    <ol class="list-decimal ml-6">
+                        <li>Connect wallet and fetch NFT list.</li>
+                        <li>Filter by collection or mint address.</li>
+                        <li>Verify ownership + metadata.</li>
+                        <li>Issue access token / invite link.</li>
+                        <li>Log access and monitor transfers.</li>
+                    </ol>
+                </div>
+
+                <div class="slide">
+                    <h2>6) Tradeoffs & Compromises</h2>
+                    <ul>
+                        <li><strong>On-chain vs off-chain gating:</strong> off-chain is faster.</li>
+                        <li><strong>Privacy vs security:</strong> more checks add friction.</li>
+                        <li><strong>Revocation:</strong> do you remove access after resale?</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>Checkpoint Quiz</h2>
+                    <div id="quiz-container"></div>
+                </div>
+
+                <div class="slide-nav">
+                    <button data-slide-prev>Previous</button>
+                    <div class="slide-dots" data-slide-dots></div>
+                    <button data-slide-next>Next</button>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/slides.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'module-9-nft-gate-community',
+            questions: [
+                {
+                    question: "What must be verified to grant access?",
+                    options: [
+                        "NFT ownership",
+                        "Email domain",
+                        "Browser type",
+                        "Validator version"
+                    ],
+                    correct: 0,
+                    explanation: "Access depends on NFT ownership." 
+                },
+                {
+                    question: "Where does NFT metadata live?",
+                    options: [
+                        "In the wallet",
+                        "On-chain or referenced by a URI",
+                        "Only in the browser",
+                        "In the system program"
+                    ],
+                    correct: 1,
+                    explanation: "Metadata is stored on-chain or via URI." 
+                },
+                {
+                    question: "Why monitor transfers?",
+                    options: [
+                        "To update ownership and revoke access",
+                        "To reduce RPC calls",
+                        "To mint more NFTs",
+                        "To hide the collection"
+                    ],
+                    correct: 0,
+                    explanation: "Resale can change who should have access." 
+                },
+                {
+                    question: "What is the simplest gating approach?",
+                    options: [
+                        "Off-chain verification",
+                        "On-chain DAO vote",
+                        "Custom validator",
+                        "Manual approvals"
+                    ],
+                    correct: 0,
+                    explanation: "Off-chain checks are fastest to ship." 
+                },
+                {
+                    question: "What is a key tradeoff?",
+                    options: [
+                        "Speed vs strict security",
+                        "More tokens vs fewer wallets",
+                        "More validators vs fewer programs",
+                        "Public keys vs private keys"
+                    ],
+                    correct: 0,
+                    explanation: "More checks add security but reduce speed." 
+                },
+                {
+                    question: "Which step validates the holder?",
+                    options: [
+                        "Filtering by collection and owner",
+                        "Choosing a theme",
+                        "Uploading a logo",
+                        "Setting DNS"
+                    ],
+                    correct: 0,
+                    explanation: "You must validate ownership." 
+                },
+                {
+                    question: "Why use devnet first?",
+                    options: [
+                        "Safe testing",
+                        "No wallets",
+                        "More fees",
+                        "Faster consensus"
+                    ],
+                    correct: 0,
+                    explanation: "Devnet is for safe testing." 
+                },
+                {
+                    question: "What unlocks access?",
+                    options: [
+                        "A verified ownership proof",
+                        "A stake account",
+                        "A system program",
+                        "A validator vote"
+                    ],
+                    correct: 0,
+                    explanation: "Ownership proof unlocks access." 
+                },
+                {
+                    question: "Which is a valid access method?",
+                    options: [
+                        "Invite link tied to a token",
+                        "Password only",
+                        "Manual form",
+                        "Validator signature"
+                    ],
+                    correct: 0,
+                    explanation: "Access links can be tied to ownership checks." 
+                },
+                {
+                    question: "What changes when the NFT is sold?",
+                    options: [
+                        "The new owner should get access",
+                        "The mint disappears",
+                        "The program stops",
+                        "The chain resets"
+                    ],
+                    correct: 0,
+                    explanation: "Access should follow ownership." 
+                }
+            ]
+        };
+        renderQuiz('quiz-container', quizData);
+    </script>
+</body>
+</html>

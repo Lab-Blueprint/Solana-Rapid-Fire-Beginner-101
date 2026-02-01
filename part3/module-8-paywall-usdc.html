@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build a USDC Paywall - Solana 101</title>
+    <meta name="description" content="Hands-on: design and build a USDC paywall with step-by-step reasoning.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solana: {
+                            purple: '#09637E',
+                            green: '#7AB2B2',
+                            dark: '#EBF4F6',
+                            darker: '#EBF4F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EBF4F6] text-gray-900 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 bg-[#EBF4F6]/95 backdrop-blur-sm border-b border-[#7AB2B2] z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-white border border-[#7AB2B2] flex items-center justify-center">
+                        <img src="https://solana.com/src/img/branding/solanaLogoMark.svg" alt="Solana" class="w-7 h-7" />
+                    </div>
+                    <span class="text-xl font-bold">Solana 101</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lesson-layout pt-16">
+        <!-- Sidebar -->
+        <div class="lesson-sidebar" id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main class="lesson-content">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <a href="../index.html" class="hover:text-gray-900">Home</a>
+                <span>/</span>
+                <span>Part 3</span>
+                <span>/</span>
+                <span class="text-solana-purple">Build a USDC Paywall</span>
+            </div>
+
+            <h1>Build a USDC Paywall</h1>
+
+            <p class="text-xl text-gray-700 mb-8">
+                Learn to design and ship a USDC paywall with a clear plan: problem framing, architecture, phases, and tradeoffs.
+            </p>
+
+            <div class="slide-deck">
+
+                <div class="slide active">
+                    <div class="slide-card my-8">
+                        <div class="slide-title">USDC paywall from idea to execution</div>
+                        <div class="slide-subtitle">Build a simple payment gate for content or SaaS.</div>
+                    </div>
+
+                    <h2>Learning Objective</h2>
+                    <ul>
+                        <li>Translate a product goal into an on-chain design</li>
+                        <li>Map the system architecture (client + program + token accounts)</li>
+                        <li>Plan a build with phases, tests, and tradeoffs</li>
+                    </ul>
+
+                    <h2>What to Expect</h2>
+                    <ul>
+                        <li>Problem framing and constraints</li>
+                        <li>Architecture and data flow</li>
+                        <li>Step-by-step execution checklist</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>1) Analyze the Problem</h2>
+                    <ul>
+                        <li><strong>Goal:</strong> user pays USDC to unlock premium content.</li>
+                        <li><strong>User story:</strong> pay once, get access immediately.</li>
+                        <li><strong>Constraints:</strong> minimize fraud, confirm payment, keep UX fast.</li>
+                        <li><strong>Success:</strong> payment verified, access granted, audit trail retained.</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>2) System Architecture</h2>
+                    <ul>
+                        <li><strong>Client:</strong> wallet connects and signs a USDC transfer.</li>
+                        <li><strong>On-chain:</strong> Token Program transfers USDC to merchant account.</li>
+                        <li><strong>Off-chain:</strong> server checks transaction signature and grants access.</li>
+                        <li><strong>Data:</strong> record tx signature, buyer wallet, and access window.</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>User Story: USDC Paywall (UML)</h2>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span>Use Case Diagram (Mermaid)</span>
+                        </div>
+                        <div class="mermaid-diagram">
+                            <div class="mermaid" id="paywall-userstory-mermaid" data-mermaid-source="flowchart LR
+User(User) --> Paywall[View Paywall, return content if user paid]
+User --> Connect[Connect Wallet]
+Connect --> Balance[Check USDC Balance]
+User --> Request[Request to pay, server return invoice_id, later use as Txn Memo]
+User --> Pay[Pay with USDC, invoice_id in Txn Memo]
+Server(Server) --> CheckInvoice[Poll Solana to see if there is a txn with invoice_id in Memo]
+CheckInvoice --> Chain[(Solana RPC)]
+Server --> GenInvoice[Generate invoice_id, return to user to use as Txn Memo]
+Pay --> Chain"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Request-to-pay Sequence Diagram</h2>
+                    <p>
+                        The system flow when User click pay -> Server return invoice_id -> User pay USDC with invoice_id as Txn Memo. 
+                        <br/>
+                        Server poll blockchain to see if there is any txn with correct information {invoice_id, amount, token=USDC, wallet} -> update wallet as paid in database
+                    </p>
+                    <div class="animation-container my-8">
+                        <div class="mermaid-diagram">
+                            <div class="mermaid" id="paywall-sequence-mermaid" data-mermaid-source="sequenceDiagram
+    participant User
+    participant Server
+    participant Solana as Solana Network RPC
+
+    User->>Server: Request invoice (POST /api/invoice)
+    Server-->>User: Invoice memo + 5-min window
+    User->>Solana: Send USDC transfer with memo
+    Solana-->>Server: Transaction visible on-chain
+    Server->>Solana: Poll for memo match (15s)
+    Server-->>Server: Validate amount + receiver\n+    Server-->>User: Payment confirmed
+    User->>Server: Poll status (every 5s)
+    Server-->>User: Unlock access / pending"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>5) Tech Stack</h2>
+                    <ul>
+                        <li><strong>Client:</strong> React.js + Solana Wallet Adapter</li>
+                        <li><strong>Server:</strong> Go + PostgreSQL</li>
+                        <li><strong>Solana Network:</strong> Devnet</li>
+                        <li><strong>RPC Provider:</strong> Hosted RPC (API key)</li>
+                        <li><strong>Deployment:</strong> DigitalOcean droplet (server) + static hosting for client</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>6) Project Phases (with Testing)</h2>
+                    <ol class="list-decimal ml-6">
+                        <li>Prototype: simulate payment + mock access state.</li>
+                        <li>Integrate: real USDC mint + transfer instruction.</li>
+                        <li>Verify: confirm tx on-chain, match amount and receiver.</li>
+                        <li>Harden: handle retries, failed tx, and edge cases.</li>
+                        <li>Test: unit tests for parsing tx + E2E for payment flow.</li>
+                    </ol>
+                </div>
+
+                <div class="slide">
+                    <h2>7) Tradeoffs & Compromises</h2>
+                    <ul>
+                        <li><strong>Instant UX vs security:</strong> show pending access before final confirmation?</li>
+                        <li><strong>On-chain vs off-chain:</strong> keep access logic off-chain for speed.</li>
+                        <li><strong>One-time vs subscription:</strong> simplify to one-time purchase first.</li>
+                    </ul>
+                </div>
+
+                <div class="slide">
+                    <h2>Checkpoint Quiz</h2>
+                    <div id="quiz-container"></div>
+                </div>
+
+                <div class="slide-nav">
+                    <button data-slide-prev>Previous</button>
+                    <div class="slide-dots" data-slide-dots></div>
+                    <button data-slide-next>Next</button>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div id="lesson-nav"></div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-sidebar-toggle" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="../js/navigation.js"></script>
+    <script src="../js/quiz.js"></script>
+    <script src="../js/slides.js"></script>
+
+    <script>
+        // Initialize sidebar
+        document.getElementById('sidebar').innerHTML = Navigation.generateSidebar();
+        Navigation.highlightCurrentPage();
+
+        // Initialize navigation buttons
+        document.getElementById('lesson-nav').innerHTML = Navigation.generateNavButtons();
+
+        // Initialize quiz
+        const quizData = {
+            sectionId: 'module-8-paywall-usdc',
+            questions: [
+                {
+                    question: "What does a USDC paywall verify before granting access?",
+                    options: [
+                        "The user's Twitter handle",
+                        "That a USDC transfer reached the merchant account",
+                        "That the token is an NFT",
+                        "That the user is on devnet"
+                    ],
+                    correct: 1,
+                    explanation: "Access is granted after verifying payment." 
+                },
+                {
+                    question: "Which program executes a USDC transfer?",
+                    options: [
+                        "System Program",
+                        "Token Program",
+                        "Stake Program",
+                        "BPF Loader"
+                    ],
+                    correct: 1,
+                    explanation: "SPL token transfers use the Token Program." 
+                },
+                {
+                    question: "Why store a receipt off-chain?",
+                    options: [
+                        "To keep a record for access checks",
+                        "To prevent validators from seeing the tx",
+                        "To avoid signatures",
+                        "To mint more USDC"
+                    ],
+                    correct: 0,
+                    explanation: "Receipts help revalidate access without reprocessing the chain." 
+                },
+                {
+                    question: "What is a key tradeoff for instant access?",
+                    options: [
+                        "Lower gas fees",
+                        "Potential risk before final confirmation",
+                        "No need for wallets",
+                        "Program upgrades"
+                    ],
+                    correct: 1,
+                    explanation: "Instant access can happen before finality." 
+                },
+                {
+                    question: "What should be validated in the tx?",
+                    options: [
+                        "Receiver and amount",
+                        "User's email",
+                        "Browser type",
+                        "RPC provider"
+                    ],
+                    correct: 0,
+                    explanation: "You must validate receiver and amount." 
+                },
+                {
+                    question: "Which step confirms the payment on-chain?",
+                    options: [
+                        "Building the UI",
+                        "Confirming transaction finality",
+                        "Writing a blog post",
+                        "Setting DNS"
+                    ],
+                    correct: 1,
+                    explanation: "Finality confirms the tx on-chain." 
+                },
+                {
+                    question: "What is the simplest version of a paywall?",
+                    options: [
+                        "Subscription with tiers",
+                        "One-time purchase",
+                        "NFT staking",
+                        "DAO vote"
+                    ],
+                    correct: 1,
+                    explanation: "Start with one-time purchase." 
+                },
+                {
+                    question: "Why use devnet first?",
+                    options: [
+                        "To avoid paying real tokens",
+                        "To avoid using wallets",
+                        "To skip testing",
+                        "To avoid instructions"
+                    ],
+                    correct: 0,
+                    explanation: "Devnet is for safe testing." 
+                },
+                {
+                    question: "What is the merchant account for?",
+                    options: [
+                        "To receive USDC",
+                        "To store private keys",
+                        "To run validators",
+                        "To deploy programs"
+                    ],
+                    correct: 0,
+                    explanation: "It receives the USDC payment." 
+                },
+                {
+                    question: "What unlocks parallel execution benefits?",
+                    options: [
+                        "Clear account lists",
+                        "Hidden accounts",
+                        "Random instructions",
+                        "Manual approvals"
+                    ],
+                    correct: 0,
+                    explanation: "Clear account lists help validators parallelize." 
+                }
+            ]
+        };
+        renderQuiz('quiz-container', quizData);
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {});
+    </script>
+    <script>
+        if (window.mermaid) {
+            mermaid.initialize({ startOnLoad: false, securityLevel: 'loose' });
+            const diagrams = document.querySelectorAll('[data-mermaid-source]');
+            const renderMermaid = (diagram) => {
+                if (!diagram) return;
+                const slide = diagram.closest('.slide');
+                if (slide && !slide.classList.contains('active')) return;
+                if (diagram.dataset.rendered === 'true') return;
+                const source = diagram.dataset.mermaidSource || '';
+                if (!source) return;
+                diagram.textContent = source;
+                try {
+                    mermaid.run({ nodes: [diagram] });
+                    diagram.dataset.rendered = 'true';
+                } catch (err) {
+                    diagram.textContent = source;
+                }
+            };
+
+            const rerenderAll = () => {
+                diagrams.forEach((diagram) => renderMermaid(diagram));
+            };
+
+            if (diagrams.length) {
+                rerenderAll();
+                const rerender = () => setTimeout(rerenderAll, 80);
+                document.querySelectorAll('[data-slide-next], [data-slide-prev], [data-slide-dots] button, .slide-dot').forEach((btn) => {
+                    btn.addEventListener('click', rerender);
+                });
+                window.addEventListener('resize', rerender);
+                const observer = new MutationObserver(rerender);
+                const deck = document.querySelector('.slide-deck');
+                if (deck) {
+                    observer.observe(deck, { attributes: true, subtree: true, attributeFilter: ['class'] });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
