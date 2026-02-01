@@ -226,6 +226,52 @@
     width: 100%;
 }
 
+/* Phase accordion */
+.phase-accordion {
+    border: 1px solid rgba(9, 99, 126, 0.2);
+    border-radius: 0.75rem;
+    background: #FFFFFF;
+    overflow: hidden;
+}
+
+.phase-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1rem;
+    border: 0;
+    background: #FFFFFF;
+    color: #09637E;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.phase-toggle:hover {
+    background: rgba(9, 99, 126, 0.08);
+}
+
+.phase-toggle.active {
+    background: rgba(9, 99, 126, 0.12);
+}
+
+.phase-panel {
+    display: none;
+    padding: 0 1rem 1rem;
+    border-bottom: 1px solid rgba(9, 99, 126, 0.15);
+}
+
+.phase-panel.active {
+    display: block;
+}
+
+.phase-indicator {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
 /* Buttons */
 .btn-primary,
 .btn-secondary,
@@ -408,7 +454,7 @@
 .lesson-content h2 {
     font-size: 1.75rem;
     font-weight: 600;
-    margin-top: 2.5rem;
+    margin-top: 1.5rem;
     margin-bottom: 1rem;
     color: #7AB2B2;
 }

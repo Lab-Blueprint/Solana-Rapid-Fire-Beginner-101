@@ -104,6 +104,8 @@
                         <li><strong>User story:</strong> pay once, get access immediately.</li>
                         <li><strong>Constraints:</strong> minimize fraud, confirm payment, keep UX fast.</li>
                         <li><strong>Success:</strong> payment verified, access granted, audit trail retained.</li>
+                        <li><strong>Edge cases:</strong> server watcher misses tx, duplicate payments, invalid memo, server restarts mid-invoice, pending payments past 5 minutes.</li>
+                        <li><strong>Recovery:</strong> client stores tx + invoice in localStorage and can trigger a manual recheck endpoint.</li>
                     </ul>
                 </div>
 
@@ -176,23 +178,92 @@ Pay --> Chain"></div>
                 </div>
 
                 <div class="slide">
-                    <h2>6) Project Phases (with Testing)</h2>
-                    <ol class="list-decimal ml-6">
-                        <li>Prototype: simulate payment + mock access state.</li>
-                        <li>Integrate: real USDC mint + transfer instruction.</li>
-                        <li>Verify: confirm tx on-chain, match amount and receiver.</li>
-                        <li>Harden: handle retries, failed tx, and edge cases.</li>
-                        <li>Test: unit tests for parsing tx + E2E for payment flow.</li>
-                    </ol>
-                </div>
+                    <h2>Implementation Phases</h2>
+                    <div class="phase-accordion" data-phase-accordion>
+                        <button class="phase-toggle active" data-phase-toggle="phase-1">
+                            <span>Phase 1 — Connect wallet & check USDC balance</span>
+                            <span class="phase-indicator">−</span>
+                        </button>
+                        <div class="phase-panel active" id="phase-1">
+                            <p class="text-sm text-gray-600">Focus: client code and reading blockchain state.</p>
+                            <ol class="list-decimal ml-6 text-sm text-gray-700 mt-2">
+                                <li>User opens the dapp, connects wallet, and sees USDC balance on devnet.</li>
+                                <li>Admin airdrops USDC devnet to the user.</li>
+                                <li>User opens the site again, reconnects, and sees the updated balance.</li>
+                            </ol>
+                        </div>
 
-                <div class="slide">
-                    <h2>7) Tradeoffs & Compromises</h2>
-                    <ul>
-                        <li><strong>Instant UX vs security:</strong> show pending access before final confirmation?</li>
-                        <li><strong>On-chain vs off-chain:</strong> keep access logic off-chain for speed.</li>
-                        <li><strong>One-time vs subscription:</strong> simplify to one-time purchase first.</li>
-                    </ul>
+                        <button class="phase-toggle" data-phase-toggle="phase-2">
+                            <span>Phase 2 — Protected Paywall</span>
+                            <span class="phase-indicator">+</span>
+                        </button>
+                        <div class="phase-panel" id="phase-2">
+                            <p class="text-sm text-gray-600">Focus: server + database for premium content gating.</p>
+                            <ol class="list-decimal ml-6 text-sm text-gray-700 mt-2">
+                                <li>Build DB tables: <code>paid_wallet{id, wallet, paid_at, invoice_id}</code> and <code>invoice{id, wallet, amount, sql_token_address, invoice_id_rndstr, status, txn, expired_at}</code>.</li>
+                                <li>Implement <code>GET /api/content</code> with <code>wallet</code> param: return content if paid; else false.</li>
+                                <li>User opens dapp, connects wallet, requests <code>/api/content</code>, receives false, UI prompts to pay.</li>
+                            </ol>
+                        </div>
+
+                        <button class="phase-toggle" data-phase-toggle="phase-3">
+                            <span>Phase 3 — Pay with USDC</span>
+                            <span class="phase-indicator">+</span>
+                        </button>
+                        <div class="phase-panel" id="phase-3">
+                            <p class="text-sm text-gray-600">Focus: payment workflow on client + server.</p>
+                            <div class="mt-2">
+                                <p class="text-sm font-semibold text-gray-700">Client</p>
+                                <ol class="list-decimal ml-6 text-sm text-gray-700 mt-1">
+                                    <li>Enable Pay only if balance &gt;= required amount; otherwise disable.</li>
+                                    <li>On Pay, call <code>POST /api/invoice</code> with <code>{wallet, amount, sql_token_address}</code>; receive <code>invoice_id_rndstr</code>.</li>
+                                    <li>Create a tx with memo = <code>invoice_id_rndstr</code> and request signature.</li>
+                                    <li>Immediately persist <code>invoice_id_rndstr</code> before sending the tx to avoid a refresh losing state.</li>
+                                    <li>After signature, poll <code>/api/content</code> every 15s for 3 minutes. If unlocked, show success + content. Else prompt refresh after 2 minutes. Store <code>txn</code> + <code>invoice_id_rndstr</code> in localStorage for dispute.</li>
+                                    <li>If user refreshes right after signing and <code>txn</code> is missing, allow recheck by invoice + wallet.</li>
+                                </ol>
+                                <p class="text-sm font-semibold text-gray-700 mt-3">Server</p>
+                                <ol class="list-decimal ml-6 text-sm text-gray-700 mt-1">
+                                    <li>POST <code>/api/invoice</code> checks if wallet already paid; validates <code>amount</code> + <code>sql_token_address</code>.</li>
+                                    <li>Create <code>invoice_id_rndstr</code> and insert invoice row.</li>
+                                    <li>Start a 5-minute watcher polling chain every 15s for a tx matching <code>{wallet, amount, sql_token_address, invoice_id_rndstr}</code>.</li>
+                                    <li>On match, update invoice status and insert row into <code>paid_wallet</code>.</li>
+                                    <li>Return <code>invoice_id_rndstr</code> to client.</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <button class="phase-toggle" data-phase-toggle="phase-4">
+                            <span>Phase 4 — Polishing the app</span>
+                            <span class="phase-indicator">+</span>
+                        </button>
+                        <div class="phase-panel" id="phase-4">
+                            <p class="text-sm text-gray-600">Focus: test coverage, recheck flows, and production polish.</p>
+                            <div class="mt-2">
+                                <p class="text-sm font-semibold text-gray-700">Client</p>
+                                <ol class="list-decimal ml-6 text-sm text-gray-700 mt-1">
+                                    <li>Persist <code>txn</code> + <code>invoice_id_rndstr</code> in localStorage after payment.</li>
+                                    <li>If server returns “not paid,” show a <strong>Recheck Payment</strong> button.</li>
+                                    <li>On click, call <code>POST /api/recheck</code> with <code>{wallet, txn, invoice_id_rndstr}</code>.</li>
+                                    <li>Show retry/pending status and refresh the content on success.</li>
+                                </ol>
+                                <p class="text-sm font-semibold text-gray-700 mt-3">Server</p>
+                                <ol class="list-decimal ml-6 text-sm text-gray-700 mt-1">
+                                    <li>Add <code>POST /api/recheck</code> to re-validate a completed tx.</li>
+                                    <li>If the 5-minute watcher missed the tx, re-scan by signature + memo.</li>
+                                    <li>Update invoice + paid_wallet rows when recheck succeeds.</li>
+                                </ol>
+                                <p class="text-sm font-semibold text-gray-700 mt-3">Testing & Hardening</p>
+                                <ol class="list-decimal ml-6 text-sm text-gray-700 mt-1">
+                                    <li>Missing-tx edge case: watcher timeout + successful recheck.</li>
+                                    <li>Double payment: prevent duplicate inserts and access conflicts.</li>
+                                    <li>Invalid memo: reject and keep access locked.</li>
+                                    <li>Partial failures: server restart with pending invoices.</li>
+                                    <li>Rate limiting for recheck endpoint.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="slide">
@@ -391,6 +462,25 @@ Pay --> Chain"></div>
                     observer.observe(deck, { attributes: true, subtree: true, attributeFilter: ['class'] });
                 }
             }
+        }
+    </script>
+    <script>
+        const accordion = document.querySelector('[data-phase-accordion]');
+        if (accordion) {
+            accordion.querySelectorAll('[data-phase-toggle]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.dataset.phaseToggle;
+                    accordion.querySelectorAll('.phase-panel').forEach((panel) => {
+                        panel.classList.toggle('active', panel.id === targetId);
+                    });
+                    accordion.querySelectorAll('.phase-toggle').forEach((toggle) => {
+                        const indicator = toggle.querySelector('.phase-indicator');
+                        const isActive = toggle.dataset.phaseToggle === targetId;
+                        toggle.classList.toggle('active', isActive);
+                        if (indicator) indicator.textContent = isActive ? '−' : '+';
+                    });
+                });
+            });
         }
     </script>
 </body>
