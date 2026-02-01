@@ -899,11 +899,26 @@
 }
 
 .all-at-once-status {
-    padding: 0.75rem 1rem;
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 1.25rem;
     background: #FFFFFF;
-    border-top: 1px solid rgba(122, 178, 178, 0.6);
+    border: 1px solid rgba(122, 178, 178, 0.6);
+    border-radius: 999px;
     color: #09637E;
     font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 10px 20px rgba(9, 99, 126, 0.12);
+    z-index: 2;
+}
+
+#ledger.highlighted rect,
+#memory-panel.highlighted rect {
+    stroke: #09637E;
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 10px rgba(9, 99, 126, 0.35));
 }
 
 /* Computer flow interaction */

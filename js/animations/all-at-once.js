@@ -16,13 +16,15 @@ const allAtOnceAnimation = {
 
     leaderSlot: { x: 560, y: 190 },
     validatorSlots: [
-        { x: 320, y: 120 },
-        { x: 320, y: 260 }
+        { x: 320, y: 90 },
+        { x: 320, y: 190 },
+        { x: 320, y: 290 }
     ],
     validators: [
         { id: 'V1', x: 560, y: 190, flag: '🇺🇸', leader: true },
-        { id: 'V2', x: 320, y: 120, flag: '🇬🇧', leader: false },
-        { id: 'V3', x: 320, y: 260, flag: '🇯🇵', leader: false }
+        { id: 'V2', x: 320, y: 90, flag: '🇬🇧', leader: false },
+        { id: 'V3', x: 320, y: 190, flag: '🇯🇵', leader: false },
+        { id: 'V4', x: 320, y: 290, flag: '🇫🇷', leader: false }
     ],
 
     clients: [],
@@ -59,6 +61,7 @@ const allAtOnceAnimation = {
                 <div class="all-at-once-status" id="all-at-once-status"></div>
                 <div class="animation-controls">
                     <button id="all-at-once-step">Step</button>
+                    <button id="all-at-once-auto" class="btn-secondary">Auto Play</button>
                     <button id="all-at-once-reset" class="ml-auto">Reset State</button>
                 </div>
             </div>
@@ -136,9 +139,22 @@ const allAtOnceAnimation = {
 
     bind() {
         const stepBtn = this.container.querySelector('#all-at-once-step');
+        const autoBtn = this.container.querySelector('#all-at-once-auto');
         const resetBtn = this.container.querySelector('#all-at-once-reset');
 
         if (stepBtn) stepBtn.addEventListener('click', () => this.step());
+        if (autoBtn) {
+            autoBtn.addEventListener('click', () => {
+                if (this.autoTimer) {
+                    clearInterval(this.autoTimer);
+                    this.autoTimer = null;
+                    autoBtn.textContent = 'Auto Play';
+                    return;
+                }
+                this.autoTimer = setInterval(() => this.step(), 1200);
+                autoBtn.textContent = 'Stop';
+            });
+        }
         if (resetBtn) resetBtn.addEventListener('click', () => this.resetState());
     },
 
@@ -155,14 +171,15 @@ const allAtOnceAnimation = {
         const styles = {
             V1: { stroke: '#FF6B6B', r: 38 },
             V2: { stroke: '#4ECDC4', r: 34 },
-            V3: { stroke: '#7B6CF6', r: 36 }
+            V3: { stroke: '#7B6CF6', r: 36 },
+            V4: { stroke: '#F4B740', r: 35 }
         };
         return styles[id] || { stroke: '#F4B740', r: 36 };
     },
 
     randomCommand(clientId) {
         const targets = ['A', 'B', 'C'];
-        const ops = ['+', '*'];
+        const ops = ['+', '-', '*', '/'];
         const target = targets[Math.floor(Math.random() * targets.length)];
         const op = ops[Math.floor(Math.random() * ops.length)];
         const value = Math.floor(Math.random() * 5) + 1;
@@ -171,13 +188,20 @@ const allAtOnceAnimation = {
 
     makeBatch() {
         const shuffled = [...this.clients].sort(() => Math.random() - 0.5).slice(0, 3);
-        return shuffled.map(c => this.randomCommand(c.id));
+        const nonLeaders = this.validators.filter(v => !v.leader);
+        return shuffled.map(c => {
+            const cmd = this.randomCommand(c.id);
+            cmd.assignedValidator = nonLeaders[Math.floor(Math.random() * nonLeaders.length)].id;
+            return cmd;
+        });
     },
 
     applyBatch() {
         this.currentBatch.forEach((cmd) => {
             if (cmd.op === '+') this.state[cmd.target] += cmd.value;
+            if (cmd.op === '-') this.state[cmd.target] = Math.max(0, this.state[cmd.target] - cmd.value);
             if (cmd.op === '*') this.state[cmd.target] *= cmd.value;
+            if (cmd.op === '/') this.state[cmd.target] = Math.max(0, Math.floor(this.state[cmd.target] / cmd.value));
         });
         const mem = this.svg.querySelector('#memory-line');
         if (mem) mem.textContent = `A=${this.state.A} B=${this.state.B} C=${this.state.C}`;
@@ -250,6 +274,12 @@ const allAtOnceAnimation = {
         });
     },
 
+    highlightGroup(id, active) {
+        const group = this.svg.querySelector(id);
+        if (!group) return;
+        group.classList.toggle('highlighted', active);
+    },
+
     updateValidatorPositions() {
         const leader = this.validators.find(v => v.leader);
         const others = this.validators.filter(v => !v.leader);
@@ -312,29 +342,36 @@ const allAtOnceAnimation = {
             const nonLeaders = this.validators.filter(v => !v.leader);
             this.currentBatch.forEach((cmd, idx) => {
                 const client = this.clients.find(c => c.id === cmd.clientId);
-                let v = this.validators.find(val => val.id === client.validatorId);
-                if (!v || v.leader) {
-                    v = nonLeaders[idx % nonLeaders.length];
-                }
+                let v = this.validators.find(val => val.id === cmd.assignedValidator);
+                if (!v || v.leader) v = nonLeaders[idx % nonLeaders.length];
                 this.animateTransfer(client.x, client.y, v.x, v.y, this.currentColor, idx * 0.08);
             });
         }
 
         if (this.stepIndex === 1) {
-            this.updateStatus('Validators forward inputs to the leader.');
+            this.updateStatus('Validators communicate and send inputs to the leader.');
             const nonLeaders = this.validators.filter(v => !v.leader);
+            const communicator = nonLeaders.slice(0, -1);
+            if (communicator.length >= 2) {
+                for (let i = 0; i < communicator.length - 1; i += 1) {
+                    const a = communicator[i];
+                    const b = communicator[i + 1];
+                    this.animateTransfer(a.x, a.y, b.x, b.y, this.currentColor, 0.02 + i * 0.08);
+                    this.animateTransfer(b.x, b.y, a.x, a.y, this.currentColor, 0.06 + i * 0.08);
+                }
+            }
             this.currentBatch.forEach((cmd, idx) => {
                 const client = this.clients.find(c => c.id === cmd.clientId);
-                let v = this.validators.find(val => val.id === client.validatorId);
-                if (!v || v.leader) {
-                    v = nonLeaders[idx % nonLeaders.length];
-                }
+                let v = this.validators.find(val => val.id === cmd.assignedValidator);
+                if (!v || v.leader) v = nonLeaders[idx % nonLeaders.length];
                 this.animateTransfer(v.x, v.y, leader.x, leader.y, this.currentColor, idx * 0.08);
             });
         }
 
         if (this.stepIndex === 2) {
             this.updateStatus('Leader builds the block (list of inputs).');
+            this.highlightGroup('#ledger', true);
+            this.highlightGroup('#memory-panel', false);
         }
 
         if (this.stepIndex === 3) {
@@ -353,6 +390,8 @@ const allAtOnceAnimation = {
             this.ledger.unshift({ id: this.blockCount, lines: blockLines, color: this.currentColor });
             this.updateLedger();
             this.updateStatus(`State synced: A=${this.state.A}, B=${this.state.B}, C=${this.state.C}. Ledger updated.`);
+            this.highlightGroup('#ledger', false);
+            this.highlightGroup('#memory-panel', true);
             this.currentBatch = null;
             this.rotateLeader();
         }
@@ -369,6 +408,12 @@ const allAtOnceAnimation = {
         this.stepIndex = 0;
         this.ledger = [];
         this.blockCount = 0;
+        if (this.autoTimer) {
+            clearInterval(this.autoTimer);
+            this.autoTimer = null;
+            const autoBtn = this.container.querySelector('#all-at-once-auto');
+            if (autoBtn) autoBtn.textContent = 'Auto Play';
+        }
         if (this.svg) {
             const mem = this.svg.querySelector('#memory-line');
             if (mem) mem.textContent = `A=${this.state.A} B=${this.state.B} C=${this.state.C}`;
