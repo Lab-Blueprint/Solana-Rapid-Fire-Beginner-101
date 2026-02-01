@@ -15,6 +15,9 @@
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="../css/styles.css">
 
@@ -95,17 +98,19 @@
                 </div>
 
                 <div class="slide">
-                    <h2>1) Analyze the Problem</h2>
+                    <h2>Analyze the Problem</h2>
                     <ul>
                         <li><strong>Goal:</strong> NFT holders can join a private community.</li>
                         <li><strong>User story:</strong> mint or buy NFT, then unlock access.</li>
                         <li><strong>Constraints:</strong> prevent fake wallets, handle resale.</li>
                         <li><strong>Success:</strong> ownership verified, access granted quickly.</li>
+                        <li><strong>Edge cases:</strong> NFT sold after access, wallet switches, metadata spoofing, RPC lag, server cache stale.</li>
+                        <li><strong>Recovery:</strong> recheck ownership on access, revoke on transfer, allow manual refresh.</li>
                     </ul>
                 </div>
 
                 <div class="slide">
-                    <h2>2) System Architecture</h2>
+                    <h2>System Architecture</h2>
                     <ul>
                         <li><strong>Client:</strong> wallet connect + NFT ownership check.</li>
                         <li><strong>On-chain:</strong> NFT mint (SPL + metadata).</li>
@@ -115,41 +120,107 @@
                 </div>
 
                 <div class="slide">
-                    <h2>3) Project Phases (with Testing)</h2>
-                    <ol class="list-decimal ml-6">
-                        <li>Prototype: mint one NFT + basic ownership check.</li>
-                        <li>Integrate: metadata + collection verification.</li>
-                        <li>Verify: confirm NFT owner on-chain.</li>
-                        <li>Gate: generate access token or invite link.</li>
-                        <li>Test: wallet spoofing, resale transfer, and access revocation.</li>
-                    </ol>
+                    <h2>User Story (Use Case Diagram)</h2>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span>Mermaid: Use Case (Flowchart)</span>
+                        </div>
+                        <div class="mermaid-diagram">
+                            <div class="mermaid" data-mermaid-source="flowchart LR
+User[User] --> View[View Gate Page]
+User --> Connect[Connect Wallet]
+User --> Verify[Verify NFT Ownership]
+User --> Access[Access Community]
+
+Server[Server] --> Verify
+Chain[Solana Devnet] --> Verify
+Verify --> Access"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="slide">
-                    <h2>4) Task List</h2>
-                    <ul>
-                        <li>Define NFT collection + metadata.</li>
-                        <li>Mint NFT(s) on devnet.</li>
-                        <li>Build wallet connect UI.</li>
-                        <li>Check ownership via RPC.</li>
-                        <li>Gate access (token + invite).</li>
-                        <li>Monitor and revoke if NFT sold.</li>
-                    </ul>
+                    <h2>Activity Diagram</h2>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span>Mermaid: Activity (Flowchart)</span>
+                        </div>
+                        <div class="mermaid-diagram">
+                            <div class="mermaid" data-mermaid-source="flowchart TD
+Start([Open Gate Page]) --> Connect{Wallet Connected?}
+Connect -- No --> Prompt[Prompt Connect Wallet] --> Connect
+Connect -- Yes --> Check[Check NFT Ownership]
+Check --> Own{Owns NFT?}
+Own -- Yes --> Grant[Grant Access / Invite]
+Own -- No --> Deny[Show Purchase / Mint CTA]
+Grant --> Monitor[Monitor Transfers]
+Monitor --> Revoke[Revoke Access if Sold]"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="slide">
-                    <h2>5) Step-by-Step Execution</h2>
-                    <ol class="list-decimal ml-6">
-                        <li>Connect wallet and fetch NFT list.</li>
-                        <li>Filter by collection or mint address.</li>
-                        <li>Verify ownership + metadata.</li>
-                        <li>Issue access token / invite link.</li>
-                        <li>Log access and monitor transfers.</li>
-                    </ol>
+                    <h2>Implementation Phases</h2>
+                    <div class="phase-accordion" data-phase-accordion>
+                        <button class="phase-toggle active" data-phase-toggle="phase-1">
+                            <span>Phase 1 — Mint & Wallet Check</span>
+                            <span class="phase-indicator">−</span>
+                        </button>
+                        <div class="phase-panel active" id="phase-1">
+                            <p class="text-sm text-gray-600">Focus: collection setup + ownership read.</p>
+                            <ol class="list-decimal ml-6 text-sm text-gray-700 mt-2">
+                                <li>Create collection + metadata standard.</li>
+                                <li>Mint test NFTs on devnet.</li>
+                                <li>Build client wallet connect and fetch NFT list.</li>
+                                <li>Filter by collection/mint and verify ownership.</li>
+                            </ol>
+                        </div>
+
+                        <button class="phase-toggle" data-phase-toggle="phase-2">
+                            <span>Phase 2 — Gate API + Access</span>
+                            <span class="phase-indicator">+</span>
+                        </button>
+                        <div class="phase-panel" id="phase-2">
+                            <p class="text-sm text-gray-600">Focus: server verification + access delivery.</p>
+                            <ol class="list-decimal ml-6 text-sm text-gray-700 mt-2">
+                                <li>Build <code>GET /api/access?wallet=</code> to check ownership.</li>
+                                <li>Return invite token if verified; else return false.</li>
+                                <li>Client requests access and displays gate UI accordingly.</li>
+                            </ol>
+                        </div>
+
+                        <button class="phase-toggle" data-phase-toggle="phase-3">
+                            <span>Phase 3 — Revocation & Monitoring</span>
+                            <span class="phase-indicator">+</span>
+                        </button>
+                        <div class="phase-panel" id="phase-3">
+                            <p class="text-sm text-gray-600">Focus: resale handling and trust.</p>
+                            <ol class="list-decimal ml-6 text-sm text-gray-700 mt-2">
+                                <li>Monitor transfers or re-check ownership on each access attempt.</li>
+                                <li>Revoke access if NFT is sold or transferred out.</li>
+                                <li>Store access logs and ownership snapshots.</li>
+                            </ol>
+                        </div>
+
+                        <button class="phase-toggle" data-phase-toggle="phase-4">
+                            <span>Phase 4 — Testing & Edge Cases</span>
+                            <span class="phase-indicator">+</span>
+                        </button>
+                        <div class="phase-panel" id="phase-4">
+                            <p class="text-sm text-gray-600">Focus: correctness + resilience.</p>
+                            <ol class="list-decimal ml-6 text-sm text-gray-700 mt-2">
+                                <li>Wallet spoofing attempts and fake metadata.</li>
+                                <li>RPC delay or stale cache returning old ownership.</li>
+                                <li>Access after resale; ensure revocation works.</li>
+                                <li>Server restart with pending access sessions.</li>
+                                <li>Rate-limit access checks to avoid abuse.</li>
+                            </ol>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="slide">
-                    <h2>6) Tradeoffs & Compromises</h2>
+                    <h2>Tradeoffs & Compromises</h2>
                     <ul>
                         <li><strong>On-chain vs off-chain gating:</strong> off-chain is faster.</li>
                         <li><strong>Privacy vs security:</strong> more checks add friction.</li>
@@ -311,6 +382,64 @@
             ]
         };
         renderQuiz('quiz-container', quizData);
+    </script>
+    <script>
+        if (window.mermaid) {
+            mermaid.initialize({ startOnLoad: false, securityLevel: 'loose' });
+            const diagrams = document.querySelectorAll('[data-mermaid-source]');
+            const renderMermaid = (diagram) => {
+                if (!diagram) return;
+                const slide = diagram.closest('.slide');
+                if (slide && !slide.classList.contains('active')) return;
+                if (diagram.dataset.rendered === 'true') return;
+                const source = diagram.dataset.mermaidSource || '';
+                if (!source) return;
+                diagram.textContent = source;
+                try {
+                    mermaid.run({ nodes: [diagram] });
+                    diagram.dataset.rendered = 'true';
+                } catch (err) {
+                    diagram.textContent = source;
+                }
+            };
+
+            const rerenderAll = () => {
+                diagrams.forEach((diagram) => renderMermaid(diagram));
+            };
+
+            if (diagrams.length) {
+                rerenderAll();
+                const rerender = () => setTimeout(rerenderAll, 80);
+                document.querySelectorAll('[data-slide-next], [data-slide-prev], [data-slide-dots] button, .slide-dot').forEach((btn) => {
+                    btn.addEventListener('click', rerender);
+                });
+                window.addEventListener('resize', rerender);
+                const observer = new MutationObserver(rerender);
+                const deck = document.querySelector('.slide-deck');
+                if (deck) {
+                    observer.observe(deck, { attributes: true, subtree: true, attributeFilter: ['class'] });
+                }
+            }
+        }
+    </script>
+    <script>
+        const accordion = document.querySelector('[data-phase-accordion]');
+        if (accordion) {
+            accordion.querySelectorAll('[data-phase-toggle]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.dataset.phaseToggle;
+                    accordion.querySelectorAll('.phase-panel').forEach((panel) => {
+                        panel.classList.toggle('active', panel.id === targetId);
+                    });
+                    accordion.querySelectorAll('.phase-toggle').forEach((toggle) => {
+                        const indicator = toggle.querySelector('.phase-indicator');
+                        const isActive = toggle.dataset.phaseToggle === targetId;
+                        toggle.classList.toggle('active', isActive);
+                        if (indicator) indicator.textContent = isActive ? '−' : '+';
+                    });
+                });
+            });
+        }
     </script>
 </body>
 </html>
